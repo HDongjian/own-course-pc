@@ -51,18 +51,18 @@
       <div ref="classes" class="classes-content cl">
         <div :style="`height:${dayHeight+30}px`" :class="['class',{'weekend':i===1||i===7}]" v-for="i in suppleCount.start" :key="i+'start'"></div>
           <!-- 星期 -->
-          <div :class="['class','has-date',{'weekend':GW(d.date)===0||GW(d.date)===6,'today': GT()===d.date}]" v-for="d in dealClasses" :key="d.date">
+          <div :class="['class','has-date',{'weekend':GW(d.date)===0||GW(d.date)===6,'is-festival':$lib.getLunarDay(d.date).isFestival,'today': GT()===d.date}]" v-for="d in dealClasses" :key="d.date">
             <!-- 展示日期 -->
             <!-- <h4 v-if="GT()===d.date">今天</h4> -->
             <!-- ({{weeks[GW(d.date)]}}) -->
-            <h4>{{d.date}}({{$lib.getLunarDay(d.date)}})</h4>
+            <h4>{{d.date}}({{$lib.getLunarDay(d.date).result}})</h4>
             <!-- 课程列表 -->
             <div :style="`height:${dayHeight}px`" class="content">
               <div :style="`height:${dayHeight/(d.classes.length||1)}px;line-height:${dayHeight/(d.classes.length||1)}px`" :row='JSON.stringify(c)' class="item" id="course" v-for="c in d.classes||[]" :key="c.id">
                 <div v-if="c.studentId">
-                  <span class="w-40">{{getSETime(c)}}</span>
+                  <span class="w-45">{{getSETime(c)}}</span>
                   <span v-if="query.companyId&&Number(c.companyId) !== Number(query.companyId)" class="w-55">已排课</span>
-                  <span v-else class="w-60">
+                  <span v-else class="w-55">
                     <span class="w-60">{{studentType[c.studentId]}}</span>
                     <span class="w-40">{{subjectType[c.subjectId]}}</span>
                   </span>
@@ -116,7 +116,7 @@ export default {
     }
     return {
       getCatch: true,
-      dayHeight: 200,
+      dayHeight: 180,
       modal: false,
       editData: {},
       query: {
@@ -442,6 +442,24 @@ export default {
       this.editData = row
     },
     downImage (watermark) {
+      var shareContent = this.$refs.calendar
+      shareContent.style.transform = 'scale(0.5)'
+      var width = shareContent.offsetWidth
+      var height = shareContent.offsetHeight
+      var canvas = document.createElement('canvas')
+      var scale = 2
+
+      canvas.width = width * scale
+      canvas.height = height * scale
+      canvas.getContext('2d').scale(scale, scale)
+
+      var opts = {
+        scale: scale,
+        canvas: canvas,
+        logging: true,
+        width: width,
+        height: height
+      }
       let { startTime, endTime } = this.query
       startTime = this.SD(startTime)
       endTime = this.SD(endTime)
@@ -449,10 +467,17 @@ export default {
         this.printTime = this.$lib.myMoment().formate('YYYY年MM月DD日 HH:mm')
       }
       this.$nextTick(() => {
-        html2canvas(this.$refs.calendar).then((canvas) => {
+        html2canvas(this.$refs.calendar, opts).then((canvas) => {
+          var context = canvas.getContext('2d')
+          // 【重要】关闭抗锯齿
+          context.mozImageSmoothingEnabled = false
+          context.webkitImageSmoothingEnabled = false
+          context.msImageSmoothingEnabled = false
+          context.imageSmoothingEnabled = false
           var imgUri = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream') // 获取生成的图片的url
           this.$lib.downloadFile(`${startTime}-${endTime}课表统计-${this.printTime}.png`, imgUri)
           this.printTime = ''
+          shareContent.style.transform = 'scale(1)'
         })
       })
     },

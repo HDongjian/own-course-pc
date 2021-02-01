@@ -9,6 +9,7 @@ import Http from './utils/http'
 import Components from './components/index.js'
 import mixin from './mixins/mixin'
 import './styles/index.less'
+import './utils/polyfill'
 
 Vue.store = store
 Vue.use(iView)

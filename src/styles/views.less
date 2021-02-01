@@ -177,6 +177,7 @@
 
 
 @weekend-bg:rgba(17, 136, 119,.05);
+@festival-bg:rgba(43, 133, 228,0.1);
 @today-bg:rgba(255, 102, 0,.05);
 @has-bg:@info-color;
 @title-bg:rgba(45, 140, 240,.05);
@@ -185,7 +186,7 @@
 @table-border:1px solid @btn-disable-color;
 // @table-border:1px solid #000;
 @title-size :17px;
-@content-size:15px;
+@content-size:16px;
 @font-color:#000;
 
 // 课程日历
@@ -228,6 +229,9 @@
       .weekend{
         background-color: @weekend-bg;
         color:@font-color;
+      }
+      .is-festival{
+        background-color: @festival-bg;
       }
       .today{
         background-color: @today-bg;

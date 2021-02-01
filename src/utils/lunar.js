@@ -22,25 +22,29 @@ var sFtv = [
   '0101 元旦',
   '0214 情人节',
   '0308 妇女节',
-  '0312 植树节',
-  '0315 消费者权益日',
+  // '0312 植树节',
+  // '0315 消费者权益日',
   '0401 愚人节',
   '0501 劳动节',
-  '0504 青年节',
-  '0512 护士节',
-  '0601 儿童节',
+  // '0504 青年节',
+  // '0512 护士节',
+  // '0601 儿童节',
   '0701 建党节',
   '0801 建军节',
   '0910 教师节',
-  '0928 孔子诞辰',
+  // '0928 孔子诞辰',
   '1001 国庆节',
-  '1006 老人节',
-  '1024 联合国日',
+  // '1006 老人节',
+  // '1024 联合国日',
   '1224 平安夜',
   '1225 圣诞节']
 // 农历节日
 var lFtv = [
   '0101 春节',
+  '0102 大年初二',
+  '0103 大年初三',
+  '0104 大年初四',
+  '0105 大年初五',
   '0115 元宵节',
   '0206 老婆生日',
   '0505 端午节',
@@ -75,16 +79,13 @@ function dianaday (objDate) {
   var i; var leap = 0; var temp = 0
   var baseDate = new Date(1900, 0, 31)
   var offset = (objDate - baseDate) / 86400000
-  let monCyl = 14
   for (i = 1900; i < 2050 && offset > 0; i++) {
     temp = lYearDays(i)
     offset -= temp
-    monCyl += 12
   }
   if (offset < 0) {
     offset += temp
     i--
-    monCyl -= 12
   }
   let year = i
   leap = leapMonth(i) // 闰哪个月
@@ -97,15 +98,13 @@ function dianaday (objDate) {
     }
     if (isLeap === true && i === (leap + 1)) isLeap = false // 解除闰月
     offset -= temp
-    if (isLeap === false) monCyl++
   }
   if (offset === 0 && leap > 0 && i === leap + 1) {
-    if (isLeap) { isLeap = false } else { isLeap = true; --i; --monCyl }
+    if (isLeap) { isLeap = false } else { isLeap = true; --i }
   }
-  if (offset < 0) { offset += temp; --i; --monCyl }
+  if (offset < 0) { offset += temp; --i }
   let month = i
   let day = offset + 1
-  console.log(monCyl)
   return {
     sYear: objDate.getFullYear(),
     sMonth: objDate.getMonth() + 1,
@@ -147,6 +146,7 @@ function getLunarDay (date) {
   date = new Date(date + ' 00:00:00')
   let calendar = dianaday(date)
   let result = cDay(calendar.lDay)
+  let isFestival = false
   let eve = 0
   let lX = calendar.isLeap ? leapDays(calendar.lYear) : monthDays(calendar.lYear, calendar.lMonth)
   if (calendar.lMonth === 12) { eve = lX }
@@ -154,6 +154,7 @@ function getLunarDay (date) {
     if (parseInt(sFtv[ipp].substr(0, 2)) === parseInt(calendar.sMonth)) {
       if (parseInt(sFtv[ipp].substr(2, 4)) === parseInt(calendar.sDay)) {
         result = sFtv[ipp].substr(5)
+        isFestival = true
       }
     }
   }
@@ -161,13 +162,14 @@ function getLunarDay (date) {
     if (parseInt(lFtv[ippl].substr(0, 2)) === parseInt(calendar.lMonth)) {
       if (parseInt(lFtv[ippl].substr(2, 4)) === parseInt(calendar.lDay)) {
         result = lFtv[ippl].substr(5)
+        isFestival = true
       }
     }
     if (calendar.lMonth === 12) { // 判断是否为除夕
-      if (calendar.lDay === eve) { result = '除夕' }
+      if (calendar.lDay === eve) { result = '除夕'; isFestival = true }
     }
   }
-  return result
+  return { result, isFestival }
 }
 
 export default getLunarDay
