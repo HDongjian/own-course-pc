@@ -9,7 +9,7 @@
             <a href="javascript:void(0)">
               <img class="avatar" v-if="account.avatar" :src="fls+account.avatar" alt="头像">
               <img class="avatar" v-else src="../assets/default-avatar.png" alt="头像">
-              <span class="name">{{account.name}}</span>
+              <span class="name">{{account.name||account.studentName}}</span>
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
@@ -107,14 +107,18 @@ export default {
         method: 'get',
         url: `/menus`
       }).then((res) => {
-        this.menuList = res.data.data.map(item => {
+        let data = res.data.data.map(item => {
           item.id = item.menuId
           item.label = item.menuName
           item.value = item.path
           item.icon = item.menuIcon
           return item
         })
-        this.menuList = this.$lib.dealTreeList(this.menuList)
+        if (data[0]) {
+          this.$router.push(data[0].path)
+        }
+        this.$store.commit('menus', data)
+        this.menuList = this.$lib.dealTreeList(data)
       })
     },
     watchDocEvent () {

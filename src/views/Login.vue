@@ -23,7 +23,7 @@
 
 <script>
 import md5 from 'js-md5'
-
+import { web } from '@/config'
 export default {
   name: 'login',
   data () {
@@ -53,7 +53,9 @@ export default {
             if (res.data.data) {
               sessionStorage.setItem('account', JSON.stringify(res.data.data))
               this.$store.commit('account', res.data.data)
-              this.$router.push('/')
+              setTimeout(() => {
+                location.href = web
+              }, 500)
             }
           })
         }
