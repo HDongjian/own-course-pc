@@ -4,7 +4,7 @@
       <Form ref="form" :model="form" inline :rules="formRules" :label-width="80">
         <FormItem label="学生姓名" prop="studentId">
           <Select filterable clearable style="width: 160px" @on-change='studentChange' v-model="form.studentId" placeholder="学生姓名">
-            <Option v-for="(label,value) in studentType" :key="value" :value="value">{{label}}</Option>
+            <Option v-for="(item,value) in studentList" :key="value" :value="item.studentId">{{item.studentName}}</Option>
           </Select>
         </FormItem>
         <FormItem label="单价" prop="price">

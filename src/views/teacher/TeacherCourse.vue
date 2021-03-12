@@ -7,7 +7,7 @@
         </FormItem>
         <FormItem v-show="!query.idle" prop="studentId" label='学生姓名'>
           <Select filterable clearable style="width: 160px" v-model="query.studentId" placeholder="学生姓名">
-            <Option v-for="(label,value) in studentType" :key="value" :value="value">{{label}}</Option>
+            <Option v-for="(item,value) in studentList" :key="value" :value="item.studentId">{{item.studentName}}</Option>
           </Select>
         </FormItem>
         <FormItem v-show="!query.idle" prop="companyId" label='机构' :label-width="40">

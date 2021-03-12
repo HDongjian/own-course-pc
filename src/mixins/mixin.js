@@ -41,6 +41,7 @@ export default {
       })
     },
     getStudent () {
+      this.studentType = {}
       return this.$http.request({
         method: 'get',
         url: `/student/list`
