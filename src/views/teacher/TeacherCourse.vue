@@ -205,7 +205,7 @@ export default {
     loadTimeMan () {
       return this.$http.request({
         method: 'get',
-        url: `/time/list`
+        url: `/api/time/list`
       }).then((res) => {
         let data = res.data.data
         for (const item of data) {
@@ -280,7 +280,7 @@ export default {
       params.endTime = params.endTime ? this.SD(params.endTime) + ' 23:59:59' : ''
       this.$http.request({
         method: 'get',
-        url: `/course/list`,
+        url: `/api/course/list`,
         params
       }).then((res) => {
         this.data = res.data.data
@@ -484,7 +484,7 @@ export default {
     delect (data) {
       this.$http.request({
         method: 'post',
-        url: `/course/delect/${data.courseId}`,
+        url: `/api/course/delect/${data.courseId}`,
         data: this.form
       }).then((res) => {
         if (res.data.code === 200) {

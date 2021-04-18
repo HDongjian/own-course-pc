@@ -255,7 +255,7 @@ export default {
       params.endTime = params.endTime ? this.$lib.myMoment(params.endTime).formate('YYYY-MM-DD') + ' 23:59:59' : ''
       this.$http.request({
         method: 'get',
-        url: `/student/page`,
+        url: `/api/student/page`,
         params
       }).then((res) => {
         let data = res.data.data
@@ -296,7 +296,7 @@ export default {
         onOk: () => {
           this.$http.request({
             method: 'post',
-            url: `/student/delect/${data.studentId}`,
+            url: `/api/student/delect/${data.studentId}`,
             data: this.form
           }).then((res) => {
             if (res.data.code === 200) {
@@ -310,7 +310,7 @@ export default {
     changeStatus (data) {
       this.$http.request({
         method: 'post',
-        url: `/student/status`,
+        url: `/api/student/status`,
         data: {
           studentId: data.studentId,
           status: data.status === '1' ? '2' : '1'
@@ -327,7 +327,7 @@ export default {
         if (valid) {
           let data = { ...this.form }
           data.subjectIds = data.subjectIds.join(',')
-          let url = this.modifyId ? `/student/update/${this.modifyId}` : `/student/add`
+          let url = this.modifyId ? `/api/student/update/${this.modifyId}` : `/api/student/add`
           this.$http.request({
             method: 'post',
             url: url,
@@ -357,7 +357,7 @@ export default {
       if (!examIds) return
       this.$http.request({
         method: 'get',
-        url: `/subject/byExamIds`,
+        url: `/api/subject/byExamIds`,
         params: { examIds }
       }).then((res) => {
         this.subjectList = res.data.data

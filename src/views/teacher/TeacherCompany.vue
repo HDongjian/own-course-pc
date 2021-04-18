@@ -293,7 +293,7 @@ export default {
     load () {
       this.$http.request({
         method: 'get',
-        url: `/company/list`,
+        url: `/api/company/list`,
         params: this.query
       }).then((res) => {
         this.data = res.data.data
@@ -326,7 +326,7 @@ export default {
         onOk: () => {
           this.$http.request({
             method: 'post',
-            url: `/company/delect/${data.companyId}`,
+            url: `/api/company/delect/${data.companyId}`,
             data: this.form
           }).then((res) => {
             if (res.data.code === 200) {
@@ -342,7 +342,7 @@ export default {
         if (valid) {
           let data = { ...this.form }
           data.companyType = data.companyType.join(',')
-          let url = this.modifyId ? `/company/update/${this.modifyId}` : `/company/add`
+          let url = this.modifyId ? `/api/company/update/${this.modifyId}` : `/api/company/add`
           this.$http.request({
             method: 'post',
             url: url,
@@ -376,7 +376,7 @@ export default {
     getExam () {
       this.$http.request({
         method: 'get',
-        url: `/exam/list`
+        url: `/api/exam/list`
       }).then((res) => {
         for (const data of res.data.data) {
           this.$set(this.examType, data.examId, data.examName)

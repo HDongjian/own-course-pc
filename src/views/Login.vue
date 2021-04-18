@@ -44,7 +44,7 @@ export default {
         if (success) {
           this.$http.request({
             method: 'post',
-            url: '/login',
+            url: '/api/login',
             data: {
               userName: this.loginForm.userName,
               password: md5(this.loginForm.password)

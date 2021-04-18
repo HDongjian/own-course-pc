@@ -140,7 +140,7 @@ export default {
     load () {
       this.$http.request({
         method: 'get',
-        url: `/role/list`
+        url: `/api/role/list`
       }).then((res) => {
         this.data = res.data.data
       })
@@ -170,7 +170,7 @@ export default {
         onOk: () => {
           this.$http.request({
             method: 'post',
-            url: `/role/delect/${data.roleId}`,
+            url: `/api/role/delect/${data.roleId}`,
             data: this.form
           }).then((res) => {
             if (res.data.code === 200) {
@@ -218,7 +218,7 @@ export default {
     getMenu () {
       this.$http.request({
         method: 'get',
-        url: `/menu/list`
+        url: `/api/menu/list`
       }).then((res) => {
         let menuIds = this.form.menuIds.split(',')
         let data = res.data.data.map(item => {

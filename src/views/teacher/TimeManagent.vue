@@ -249,7 +249,7 @@ export default {
     load () {
       this.$http.request({
         method: 'get',
-        url: `/time/list`,
+        url: `/api/time/list`,
         params: this.query
       }).then((res) => {
         this.data = res.data.data
@@ -281,7 +281,7 @@ export default {
         onOk: () => {
           this.$http.request({
             method: 'post',
-            url: `/time/delect/${data.timeId}`,
+            url: `/api/time/delect/${data.timeId}`,
             data: this.form
           }).then((res) => {
             if (res.data.code === 200) {
@@ -297,7 +297,7 @@ export default {
         if (valid) {
           let data = { ...this.form }
           data.weekDay = data.weekDay.join(',')
-          let url = this.modifyId ? `/time/update/${this.modifyId}` : `/time/add`
+          let url = this.modifyId ? `/api/time/update/${this.modifyId}` : `/api/time/add`
           this.$http.request({
             method: 'post',
             url: url,

@@ -32,7 +32,7 @@ export default {
     getTeacher () {
       return this.$http.request({
         method: 'get',
-        url: `/user/list`
+        url: `/api/user/list`
       }).then((res) => {
         return res.data.data.filter(item => {
           this.$set(this.teacherType, item.roleId, item.name)
@@ -44,7 +44,7 @@ export default {
       this.studentType = {}
       return this.$http.request({
         method: 'get',
-        url: `/student/list`
+        url: `/api/student/list`
       }).then((res) => {
         for (const data of res.data.data) {
           this.$set(this.studentType, data.studentId, data.studentName)
@@ -55,7 +55,7 @@ export default {
     getCompany () {
       return this.$http.request({
         method: 'get',
-        url: `/company/list`
+        url: `/api/company/list`
       }).then((res) => {
         this.companyList = res.data.data
         for (const data of res.data.data) {
@@ -66,7 +66,7 @@ export default {
     getSubjects () {
       return this.$http.request({
         method: 'get',
-        url: `/subject/list`
+        url: `/api/subject/list`
       }).then((res) => {
         for (const data of res.data.data) {
           this.$set(this.subjectType, data.subjectId, data.subjectName)

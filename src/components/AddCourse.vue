@@ -193,7 +193,7 @@ export default {
     addCourse (data) {
       return this.$http.request({
         method: 'post',
-        url: '/course/add',
+        url: '/api/course/add',
         data
       }).then((res) => {
         if (res.data.code === 200) {
@@ -208,7 +208,7 @@ export default {
         let data = this.formToData()
         this.$http.request({
           method: 'post',
-          url: '/course/update',
+          url: '/api/course/update',
           data: { id: this.editId, ...data }
         }).then((res) => {
           if (res.data.code === 200) {
@@ -299,7 +299,7 @@ export default {
       if (!subjectIds) return
       this.$http.request({
         method: 'get',
-        url: `/subject/byIds`,
+        url: `/api/subject/byIds`,
         params: { subjectIds }
       }).then((res) => {
         this.subjectList = res.data.data
@@ -314,7 +314,7 @@ export default {
     getStudent () {
       this.$http.request({
         method: 'get',
-        url: `/student/list`
+        url: `/api/student/list`
       }).then((res) => {
         this.studentList = res.data.data
         for (const data of res.data.data) {
@@ -325,7 +325,7 @@ export default {
     getSubjects () {
       this.$http.request({
         method: 'get',
-        url: `/subject/list`
+        url: `/api/subject/list`
       }).then((res) => {
         for (const data of res.data.data) {
           this.$set(this.subjectMap, data.subjectId, data.subjectName)

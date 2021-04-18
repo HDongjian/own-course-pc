@@ -164,7 +164,7 @@ export default {
       params.endTime = params.endTime ? this.$lib.myMoment(params.endTime).formate('YYYY-MM-DD') + ' 23:59:59' : ''
       this.$http.request({
         method: 'get',
-        url: `/course/page`,
+        url: `/api/course/page`,
         params
       }).then((res) => {
         let data = res.data.data
@@ -207,7 +207,7 @@ export default {
         onOk: () => {
           this.$http.request({
             method: 'post',
-            url: `/course/delect/${data.courseId}`,
+            url: `/api/course/delect/${data.courseId}`,
             data: this.form
           }).then((res) => {
             if (res.data.code === 200) {

@@ -25,6 +25,6 @@ if (href.indexOf('47.104.69.49') !== -1) {
   web = 'http://localhost:4006'
   // fls = 'http://localhost:3006/'
   fls = 'http://47.104.69.49/'
-  download = 'http://localhost:3006/api'
+  download = 'http://localhost:3006/'
   file = 'http://localhost:4006/files'
 }

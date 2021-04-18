@@ -125,7 +125,7 @@ export default {
         onOk: () => {
           this.$http.request({
             method: 'post',
-            url: `/menu/delect/${data.menuId}`,
+            url: `/api/menu/delect/${data.menuId}`,
             data: this.form
           }).then((res) => {
             if (res.data.code === 200) {
@@ -145,7 +145,7 @@ export default {
     modalOk () {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          let url = this.modifyId ? `/menu/update/${this.modifyId}` : `/menu/add`
+          let url = this.modifyId ? `/api/menu/update/${this.modifyId}` : `/api/menu/add`
           this.$http.request({
             method: 'post',
             url: url,
@@ -167,7 +167,7 @@ export default {
     getMenu () {
       this.$http.request({
         method: 'get',
-        url: `/menu/list`
+        url: `/api/menu/list`
       }).then((res) => {
         this.data = res.data.data.map(item => {
           item.id = item.menuId

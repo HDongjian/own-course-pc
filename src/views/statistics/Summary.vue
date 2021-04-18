@@ -172,7 +172,7 @@ export default {
       params.endTime = params.endTime ? this.$lib.myMoment(params.endTime).formate('YYYY-MM-DD') + ' 23:59:59' : ''
       this.$http.request({
         method: 'get',
-        url: `/course/list`,
+        url: `/api/course/list`,
         params
       }).then((res) => {
         this.data = res.data.data

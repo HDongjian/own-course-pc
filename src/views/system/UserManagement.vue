@@ -206,7 +206,7 @@ export default {
     load () {
       this.$http.request({
         method: 'get',
-        url: `/user/list`
+        url: `/api/user/list`
       }).then((res) => {
         this.data = res.data.data
       })
@@ -233,7 +233,7 @@ export default {
         onOk: () => {
           this.$http.request({
             method: 'post',
-            url: `/user/delect/${data.userId}`
+            url: `/api/user/delect/${data.userId}`
           }).then((res) => {
             if (res.data.code === 200) {
               this.load()
@@ -266,7 +266,7 @@ export default {
           }
           this.$http.request({
             method: 'post',
-            url: `/user/password/${data.userId}`,
+            url: `/api/user/password/${data.userId}`,
             data: {
               password: md5(this.newPassword)
             }
@@ -284,7 +284,7 @@ export default {
       console.log(this.form.avatar)
       this.$refs.form.validate((valid) => {
         if (valid) {
-          let url = this.modifyId ? `/user/update/${this.modifyId}` : `/user/add`
+          let url = this.modifyId ? `/api/user/update/${this.modifyId}` : `/api/user/add`
           this.$http.request({
             method: 'post',
             url: url,
@@ -318,7 +318,7 @@ export default {
     getRole () {
       this.$http.request({
         method: 'get',
-        url: `/role/list`
+        url: `/api/role/list`
       }).then((res) => {
         this.roleList = res.data.data
         for (const role of this.roleList) {

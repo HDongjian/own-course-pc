@@ -172,7 +172,7 @@ export default {
     getExam () {
       return this.$http.request({
         method: 'get',
-        url: `/exam/list`
+        url: `/api/exam/list`
       }).then((res) => {
         return res.data.data.map(item => {
           item.title = item.examName
@@ -185,7 +185,7 @@ export default {
     getSubject () {
       return this.$http.request({
         method: 'get',
-        url: `/subject/list`
+        url: `/api/subject/list`
       }).then((res) => {
         return res.data.data.map(item => {
           item.title = item.subjectName

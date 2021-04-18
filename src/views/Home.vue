@@ -92,7 +92,7 @@ export default {
       if (name === 'layout') {
         this.$http.request({
           method: 'post',
-          url: `/layout`
+          url: `/api/layout`
         }).then((res) => {
           if (res.data.code === 200) {
             sessionStorage.clear()
@@ -105,7 +105,7 @@ export default {
     getMenus () {
       this.$http.request({
         method: 'get',
-        url: `/menus`
+        url: `/api/menus`
       }).then((res) => {
         let data = res.data.data.map(item => {
           item.id = item.menuId
