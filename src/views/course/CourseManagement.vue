@@ -183,7 +183,7 @@ export default {
       if (params.endTime) {
         params.endTime = this.$lib.myMoment(params.endTime).formate('YYYY-MM-DD') + ' 23:59:59'
       }
-      let url = this.$lib.downLoadUrl('/course/download', params)
+      let url = this.$lib.downLoadUrl('/api/course/download', params)
       location.href = url
     },
     add () {
