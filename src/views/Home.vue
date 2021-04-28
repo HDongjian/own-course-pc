@@ -3,7 +3,10 @@
   <div class="home-container hw-100">
     <Layout class="hw-100">
       <Header>
-        <h1 @click="menuSelect('/')" class="title">我的课表</h1>
+        <h1 @click="menuSelect('/')" class="title">
+          <my-icon icon-class="penguin-1"></my-icon>
+          <span>{{title}}</span>
+        </h1>
         <div v-if="account.userId" class="account">
           <Dropdown @on-click="dropClick">
             <a href="javascript:void(0)">
@@ -26,15 +29,17 @@
             <div @click="isCollapsed = !isCollapsed" class="sider-trigger">
               <Icon :size="25" type="md-options" />
             </div>
-            <Menu  width="auto" :class="menuitemClasses" :active-name="$route.path" @on-select="menuSelect" theme="light">
+            <Menu  width="auto" :class="menuitemClasses" :active-name="menuActiveName" @on-select="menuSelect" theme="light">
               <div v-for="(menu,i) in menuList" :key="i">
                 <MenuItem v-if="!menu.children" :name="menu.value">
-                  <Icon class="menu-icon" :size="20" :type="menu.icon" />
+                  <my-icon size="small" :icon-class="menu.icon" v-if="isLocalSvg(menu.icon)"></my-icon>
+                  <Icon v-else class="menu-icon" :size="20" :type="menu.icon" />
                   <span>{{menu.label}}</span>
                 </MenuItem>
                 <Submenu v-else :name="menu.value">
                   <template slot="title">
-                    <Icon class="menu-icon" :size="20" :type="menu.icon" />
+                    <my-icon size="small" :icon-class="menu.icon" v-if="isLocalSvg(menu.icon)"></my-icon>
+                  <Icon v-else class="menu-icon" :size="20" :type="menu.icon" />
                     <span>{{menu.label}}</span>
                   </template>
                   <MenuItem v-for="second in menu.children" :key="second.value" :name="second.value">
@@ -64,10 +69,14 @@ export default {
       menuWidth: '200px',
       isCollapsed: false,
       collapsedWidth: 78,
+      menuActiveName: '',
       menuList: []
     }
   },
   computed: {
+    title () {
+      return document.title
+    },
     menuitemClasses: function () {
       return [
         'menu-item',
@@ -77,11 +86,20 @@ export default {
   },
   created () {
     this.getMenus()
+    setTimeout(() => {
+      this.menuActiveName = this.$route.path
+    }, 2000)
   },
   mounted () {
     this.watchDocEvent()
   },
   methods: {
+    isLocalSvg (name) {
+      if (Object.hasOwnProperty.call(this.$svg, name)) {
+        return true
+      }
+      return false
+    },
     menuSelect (name) {
       this.$router.push(name)
     },
@@ -114,9 +132,9 @@ export default {
           item.icon = item.menuIcon
           return item
         })
-        if (data[0]) {
-          this.$router.push(data[0].path)
-        }
+        // if (data[0]) {
+        //   this.$router.push(data[0].path)
+        // }
         this.$store.commit('menus', data)
         this.menuList = this.$lib.dealTreeList(data)
       })

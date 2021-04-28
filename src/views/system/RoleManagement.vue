@@ -3,17 +3,17 @@
     <div class="tool">
       <Form v-if="false" ref="query" :model="query" inline :label-width="80">
         <FormItem prop="user" label='角色姓名'>
-            <!--eslint-disable-next-line vue/no-parsing-error -->
-            <Input type="text" v-model="query.roleName" placeholder="角色姓名"></Input>
+          <!--eslint-disable-next-line vue/no-parsing-error -->
+          <Input type="text" v-model="query.roleName" placeholder="角色姓名"></Input>
         </FormItem>
         <FormItem :label-width="20">
           <Button type="primary" @click="load()">查询</Button>
           <Button @click="reset()">重置</Button>
         </FormItem>
       </Form>
-      <div>
-        <Button type="primary" @click="add()">添加角色</Button>
-      </div>
+    </div>
+    <div class="tool">
+      <Button type="primary" @click="add()">添加角色</Button>
     </div>
     <Table stripe :columns="columns" :data="data"></Table>
     <!-- <Page v-if="query.total>0" :total="query.total" show-total :page-size="query.pageSize" :current="query.pageNum" @on-change="change"/> -->
@@ -135,7 +135,7 @@ export default {
   created () {
     this.load()
   },
-  mounted () {},
+  mounted () { },
   methods: {
     load () {
       this.$http.request({
@@ -145,7 +145,7 @@ export default {
         this.data = res.data.data
       })
     },
-    reset () {},
+    reset () { },
     add () {
       this.modal = true
       this.modifyId = ''
@@ -184,7 +184,7 @@ export default {
     modalOk () {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          let url = this.modifyId ? `/role/update/${this.modifyId}` : `/role/add`
+          let url = this.modifyId ? `/api/role/update/${this.modifyId}` : `/api/role/add`
           this.$http.request({
             method: 'post',
             url: url,

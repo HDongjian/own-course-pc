@@ -16,7 +16,7 @@
           </Select>
         </FormItem>
         <FormItem label="月份" prop="mouth" :label-width="40">
-          <DatePicker  @on-change="mouthChange" :editable="false" type="month" placeholder="选择月份" v-model="query.mouth" style="width: 160px"></DatePicker>
+          <DatePicker @on-change="mouthChange" :editable="false" type="month" placeholder="选择月份" v-model="query.mouth" style="width: 160px"></DatePicker>
         </FormItem>
         <!-- <FormItem label="日期" prop="startTime" :label-width="40">
           <DatePicker  v-model="query.startTime" type="date" placeholder="开始时间" style="width: 160px"></DatePicker>
@@ -26,11 +26,11 @@
         </FormItem> -->
       </Form>
       <Form style="display:inline" ref="idleForm" :model="idleForm" inline :rules="idleFormRules" :label-width="80">
-        <FormItem v-show="query.idle"  label="开始时间" prop="startTime">
+        <FormItem v-show="query.idle" label="开始时间" prop="startTime">
           <!-- eslint-disable-next-line vue/no-parsing-error -->
           <Input style="width: 160px" :maxlength="5" v-model="idleForm.startTime"></Input>
         </FormItem>
-        <FormItem v-show="query.idle"  label="截止日期" prop="endDate">
+        <FormItem v-show="query.idle" label="截止日期" prop="endDate">
           <DatePicker :editable="false" v-model="idleForm.endDate" type="date" placeholder="截止日期" style="width: 160px"></DatePicker>
         </FormItem>
         <FormItem v-show="query.idle" label="限制时长" prop="duration">
@@ -44,12 +44,16 @@
         </FormItem>
       </Form>
     </div>
-    <div ref="calendar" @contextmenu.prevent = 'classContextMenu' class="calendar cl">
-      <div class="week-title">
-        <div :class="['weeks',{'weekend':i===0||i===6}]" v-for="(week,i) in weeks" :key="i">星期{{week}}</div>
-      </div>
-      <div ref="classes" class="classes-content cl">
-        <div :style="`height:${dayHeight+30}px`" :class="['class',{'weekend':i===1||i===7}]" v-for="i in suppleCount.start" :key="i+'start'"></div>
+    <div class="position-title week-title">
+      <div :class="['weeks',{'weekend':i===0||i===6}]" v-for="(week,i) in weeks" :key="i">星期{{week}}</div>
+    </div>
+    <div class="form-content">
+      <div ref="calendar" @contextmenu.prevent='classContextMenu' class="calendar cl">
+        <div class="week-title">
+          <div :class="['weeks',{'weekend':i===0||i===6}]" v-for="(week,i) in weeks" :key="i">星期{{week}}</div>
+        </div>
+        <div ref="classes" class="classes-content cl">
+          <div :style="`height:${dayHeight+30}px`" :class="['class',{'weekend':i===1||i===7}]" v-for="i in suppleCount.start" :key="i+'start'"></div>
           <!-- 星期 -->
           <div :class="['class','has-date',{'weekend':GW(d.date)===0||GW(d.date)===6,'is-festival':$lib.getLunarDay(d.date).isFestival,'today': GT()===d.date}]" v-for="d in dealClasses" :key="d.date">
             <!-- 展示日期 -->
@@ -66,21 +70,24 @@
                     <span class="w-60">{{studentType[c.studentId]}}</span>
                     <span class="w-40">{{subjectType[c.subjectId]}}</span>
                   </span>
+                  <my-icon v-if="c.isAudition==='1'" icon-class="is-audition"></my-icon>
                 </div>
                 <div class="idle-item" v-else>{{getSETime(c)}}</div>
               </div>
             </div>
           </div>
-        <div :style="`height:${dayHeight+30}px`" :class="['class',{'weekend':i===6-suppleCount.end}]" v-for="i in 6-suppleCount.end" :key="i+'end'"></div>
-        <div v-if="printTime" class="time-watermark">
-          <p>{{printTime}}</p>
-          <p>￥{{printShow.money}}</p>
-          <p>小时数:{{printShow.count}}</p>
+          <div :style="`height:${dayHeight+30}px`" :class="['class',{'weekend':i===6-suppleCount.end}]" v-for="i in 6-suppleCount.end" :key="i+'end'"></div>
+          <div v-if="printTime" class="time-watermark">
+            <p>{{printTime}}</p>
+            <p>￥{{printShow.money}}</p>
+            <p>小时数:{{printShow.count}}</p>
+          </div>
         </div>
       </div>
     </div>
+
     <add-course :modalData="modal" :editData="editData" @close="addClose"></add-course>
-    <div class="right-menu" @contextmenu.prevent = 'rightMenuContext' :style="rightMenuStyle">
+    <div class="right-menu" @contextmenu.prevent='rightMenuContext' :style="rightMenuStyle">
       <div v-if="rowData.courseId">
         <div @click="edit(rowData)" class="items">编辑</div>
         <div @click="delect(rowData)" class="items">删除</div>

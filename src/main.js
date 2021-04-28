@@ -8,6 +8,7 @@ import Bus from './utils/bus'
 import Http from './utils/http'
 import Components from './components/index.js'
 import mixin from './mixins/mixin'
+import icons from './icons/index'
 import './styles/index.less'
 import './utils/polyfill'
 
@@ -19,6 +20,7 @@ Vue.use(Bus)
 Vue.use(Components)
 Vue.config.productionTip = false
 Vue.mixin(mixin)
+Vue.use(icons)
 
 let account = sessionStorage.getItem('account')
 if (account) {

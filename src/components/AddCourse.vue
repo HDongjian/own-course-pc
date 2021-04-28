@@ -8,7 +8,6 @@
           </Select>
         </FormItem>
         <FormItem label="单价" prop="price">
-          <!--eslint-disable-next-line vue/no-parsing-error -->
           <Input style="width: 160px" :maxlength="10" v-model="form.price"><span slot="append">元/小时</span></Input>
         </FormItem>
         <FormItem label="科目" prop="subjectId">
@@ -20,16 +19,19 @@
           <DatePicker clearable v-model="form.date" type="date" placeholder="日期" style="width: 160px"></DatePicker>
         </FormItem>
         <FormItem label="上课时间" prop="time">
-          <!--eslint-disable-next-line vue/no-parsing-error -->
           <Input style="width: 160px" :maxlength="5" v-model="form.time"></Input>
         </FormItem>
         <FormItem label="上课时长" prop="duration">
-          <!--eslint-disable-next-line vue/no-parsing-error -->
           <Input style="width: 160px" :maxlength="10" v-model="form.duration"><span slot="append">分钟</span></Input>
         </FormItem>
         <FormItem label="课时费" prop="unitPrice">
-          <!--eslint-disable-next-line vue/no-parsing-error -->
           <Input style="width: 160px" readonly :maxlength="10" v-model="unitPrice"><span slot="append">元</span></Input>
+        </FormItem>
+        <FormItem label="是否试听" prop="isAudition">
+          <i-switch false-value="0" true-value="1" v-model="form.isAudition" size="large">
+            <span slot="open">是</span>
+            <span slot="close">否</span>
+          </i-switch>
         </FormItem>
         <FormItem v-if="!editId" :label-width="20">
           <Button type="primary" @click="addTable()">添加</Button>
@@ -64,6 +66,7 @@ export default {
       modifyId: '',
       form: {
         studentId: '',
+        isAudition: '',
         subjectId: '',
         price: '',
         date: '',
@@ -71,6 +74,9 @@ export default {
         duration: '90'
       },
       formRules: {
+        isAudition: [
+          { required: true, message: '请选择是否是试听', trigger: 'change' }
+        ],
         studentId: [
           { required: true, message: '学生姓名不能为空', trigger: 'change' }
         ],
@@ -251,7 +257,7 @@ export default {
       console.log(this.form)
       this.$refs.form.validate((valid) => {
         if (!valid) return
-        let { studentId, subjectId, duration } = this.form
+        let { studentId, subjectId, duration, isAudition } = this.form
         let { startTime, endTime } = this.$lib.getStartEndTime(this.form)
         let data = {
           studentId,
@@ -259,6 +265,7 @@ export default {
           startTime,
           endTime,
           duration,
+          isAudition,
           unitPrice: this.unitPrice
         }
         let result = this.$lib.hasPeriodOrNot(data, this.addTableData)
@@ -284,9 +291,9 @@ export default {
       this.addTableData = []
       this.$emit('close')
       this.$refs.form.resetFields()
+      this.form.isAudition = '0'
     },
     studentChange (value) {
-      console.log(value)
       let subjectIds = ''
       this.form.subjectId = ''
       this.subjectType = {}
@@ -333,21 +340,23 @@ export default {
       })
     },
     formToData () {
-      let { studentId, subjectId } = this.form
+      let { studentId, subjectId, isAudition } = this.form
       let { startTime, endTime } = this.$lib.getStartEndTime(this.form)
       let data = {
         studentId,
         subjectId,
         startTime,
         endTime,
+        isAudition,
         unitPrice: this.unitPrice
       }
       return data
     },
     dataToForm (data) {
-      let { studentId, subjectId, startTime, endTime } = data
+      let { studentId, subjectId, startTime, endTime, isAudition } = data
       this.form.studentId = String(studentId)
       this.form.subjectId = String(subjectId)
+      this.form.isAudition = isAudition
       this.studentChange(this.form.studentId)
       this.form.date = this.$lib.myMoment(startTime).formate('YYYY-MM-DD')
       this.form.time = this.$lib.myMoment(startTime).formate('HH:mm')

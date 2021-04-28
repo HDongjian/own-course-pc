@@ -21,14 +21,12 @@
         <FormItem :label-width="20">
           <Button type="primary" @click="load(1)">查询</Button>
           <Button @click="reset()">重置</Button>
+          <Button type="primary" @click="add()">添加学生</Button>
         </FormItem>
       </Form>
-      <div>
-        <Button type="primary" @click="add()">添加学生</Button>
-      </div>
     </div>
     <Table stripe height="520" :columns="columns" :data="data"></Table>
-    <Page v-if="query.total>0" :total="query.total" show-total :page-size="query.pageSize" :current="query.pageNum" @on-change="change"/>
+    <Page v-if="query.total>0" :total="query.total" show-total :page-size="query.pageSize" :current="query.pageNum" @on-change="change" />
     <Modal v-model="modal" :title="modalTitle" @on-cancel="modalCancel">
       <div class="modal-content">
         <Form ref="form" :model="form" :rules="formRules" :label-width="100">

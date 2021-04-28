@@ -18,23 +18,27 @@
           </Select>
         </FormItem>
         <FormItem label="日期" prop="startTime" :label-width="40">
-          <DatePicker  v-model="query.startTime" type="date" placeholder="开始时间" style="width: 160px"></DatePicker>
+          <DatePicker v-model="query.startTime" type="date" placeholder="开始时间" style="width: 160px"></DatePicker>
         </FormItem>
         <FormItem label="—" class="date-line" prop="endTime" :label-width="20">
           <DatePicker v-model="query.endTime" type="date" placeholder="结束时间" style="width: 160px"></DatePicker>
+        </FormItem>
+        <FormItem prop="companyId" label='是否试听'>
+          <Select clearable style="width: 100px" v-model="query.isAudition" placeholder="是否试听">
+            <Option value="1">是</Option>
+            <Option value="0">否</Option>
+          </Select>
         </FormItem>
         <FormItem :label-width="20">
           <Button type="primary" @click="load(1)">查询</Button>
           <Button @click="reset()">重置</Button>
           <Button type="primary" @click="downLoad()">导出</Button>
+          <Button type="primary" @click="add()">批量添加</Button>
         </FormItem>
       </Form>
-      <div>
-        <Button type="primary" @click="add()">批量添加</Button>
-      </div>
     </div>
     <Table stripe height="520" :columns="columns" :data="data"></Table>
-    <Page v-if="query.total>0" :total="query.total" show-total :page-size="query.pageSize" :current="query.pageNum" @on-change="change"/>
+    <Page v-if="query.total>0" :total="query.total" show-total :page-size="query.pageSize" :current="query.pageNum" @on-change="change" />
     <add-course :modalData="modal" :editData="editData" @close="addClose"></add-course>
   </div>
 </template>
@@ -55,6 +59,7 @@ export default {
         pageSize: 10,
         pageNum: 1,
         startTime: '',
+        isAudition: '',
         endTime: ''
       },
       columns: [
@@ -103,6 +108,15 @@ export default {
           align: 'center',
           render: (h, params) => {
             return h('p', this.subjectType[params.row.subjectId])
+          }
+        },
+        {
+          title: '是否试听',
+          key: 'isOrder',
+          align: 'center',
+          width: 100,
+          render: (h, params) => {
+            return h('p', params.row.isAudition === '1' ? '是' : '否')
           }
         },
         {

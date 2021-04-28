@@ -249,6 +249,9 @@ let lib = {
   },
   isSameDay (date1, date2) {
     return new Date(date1).getDate() === new Date(date2).getDate()
+  },
+  isExternal (path) {
+    return /^(https?:|mailto:|tel:)/.test(path)
   }
 }
 

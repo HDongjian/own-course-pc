@@ -91,6 +91,12 @@ let router = new Router({
           name: 'TimeManagent',
           meta: { intercept: true },
           component: () => import('./views/student/StudentCourse.vue')
+        },
+        {
+          path: '/icon-management',
+          name: 'IconManagement',
+          meta: { intercept: true },
+          component: () => import('./views/system/IconManagement.vue')
         }
       ]
     }

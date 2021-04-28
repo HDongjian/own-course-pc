@@ -1,11 +1,11 @@
-import MyTree from './MyTree.vue'
-import AddCourse from './AddCourse.vue'
-import ImageUploader from './ImageUploader.vue'
-const components = {
-  MyTree,
-  AddCourse,
-  ImageUploader
-}
+
+const modulesFiles = require.context('./', true, /\.vue$/)
+const components = modulesFiles.keys().reduce((components, modulePath) => {
+  const moduleName = modulePath.replace(/^\.(.*)\/(.*)\.\w+$/, '$2')
+  const value = modulesFiles(modulePath)
+  components[moduleName] = value.default
+  return components
+}, {})
 
 export default {
   install (Vue) {

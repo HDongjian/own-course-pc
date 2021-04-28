@@ -3,17 +3,15 @@
     <div class="tool">
       <Form ref="query" :model="query" inline :label-width="80">
         <FormItem prop="user" label='机构名称'>
-            <!--eslint-disable-next-line vue/no-parsing-error -->
-            <Input type="text" v-model="query.companyName" placeholder="机构名称"></Input>
+          <!--eslint-disable-next-line vue/no-parsing-error -->
+          <Input type="text" v-model="query.companyName" placeholder="机构名称"></Input>
         </FormItem>
         <FormItem :label-width="20">
           <Button type="primary" @click="load()">查询</Button>
           <Button @click="reset()">重置</Button>
+          <Button type="primary" @click="add()">添加机构</Button>
         </FormItem>
       </Form>
-      <div>
-        <Button type="primary" @click="add()">添加机构</Button>
-      </div>
     </div>
     <Table stripe :columns="columns" :data="data"></Table>
     <Modal v-model="modal" :title="modalTitle" @on-cancel="modalCancel">
@@ -27,6 +25,12 @@
             <Select multiple style="width: 100%" v-model="form.companyType" placeholder="科目类型">
               <Option v-for="(label,value) in examType" :key="value" :value="value">{{label}}</Option>
             </Select>
+          </FormItem>
+          <FormItem label="录入订单" prop="isOrder">
+            <i-switch false-value="0" true-value="1" v-model="form.isOrder" size="large">
+              <span slot="open">可以</span>
+              <span slot="close">不可</span>
+            </i-switch>
           </FormItem>
           <FormItem label="机构地址" prop="address">
             <!--eslint-disable-next-line vue/no-parsing-error -->
@@ -46,22 +50,22 @@
           </FormItem>
           <FormItem label="课时费(每小时)">
             <Row>
-                <Col span="11">
-                    <FormItem prop="wageMin">
+              <Col span="11">
+              <FormItem prop="wageMin">
                 <!--eslint-disable-next-line vue/no-parsing-error -->
-                        <Input v-model="form.wageMin"></Input>
-                    </FormItem>
+                <Input v-model="form.wageMin"></Input>
+              </FormItem>
+              <!--eslint-disable-next-line vue/no-parsing-error -->
+              </Col>
+              <!--eslint-disable-next-line vue/no-parsing-error -->
+              <Col span="2" style="text-align: center">-</Col>
+              <Col span="11">
+              <FormItem prop="wageMax">
                 <!--eslint-disable-next-line vue/no-parsing-error -->
-                </Col>
-                <!--eslint-disable-next-line vue/no-parsing-error -->
-                <Col span="2" style="text-align: center">-</Col>
-                <Col span="11">
-                    <FormItem prop="wageMax">
-                <!--eslint-disable-next-line vue/no-parsing-error -->
-                        <Input v-model="form.wageMax"></Input>
-                    </FormItem>
-                <!--eslint-disable-next-line vue/no-parsing-error -->
-                </Col>
+                <Input v-model="form.wageMax"></Input>
+              </FormItem>
+              <!--eslint-disable-next-line vue/no-parsing-error -->
+              </Col>
             </Row>
           </FormItem>
           <FormItem label="机构类型" prop="onlineType">
@@ -124,6 +128,15 @@ export default {
           }
         },
         {
+          title: '录入订单',
+          key: 'isOrder',
+          align: 'center',
+          width: 100,
+          render: (h, params) => {
+            return h('p', params.row.isOrder === '1' ? '可以' : '不可以')
+          }
+        },
+        {
           title: '机构地址',
           key: 'address',
           align: 'center',
@@ -134,7 +147,7 @@ export default {
           title: '联系人',
           key: 'contactName',
           align: 'center',
-          width: 120
+          width: 100
         },
         {
           title: '联系电话',
@@ -235,6 +248,7 @@ export default {
       modifyId: '',
       form: {
         companyName: '',
+        isOrder: '0',
         companyType: [],
         address: '',
         wageMax: '',
@@ -248,6 +262,9 @@ export default {
         description: ''
       },
       formRules: {
+        isOrder: [
+          { required: true, message: '请选择是否可以录入订单', trigger: 'change' }
+        ],
         companyName: [
           { required: true, message: '机构名称不能为空', trigger: 'blur' }
         ],
@@ -299,7 +316,7 @@ export default {
         this.data = res.data.data
       })
     },
-    reset () {},
+    reset () { },
     add () {
       this.modal = true
       this.modifyId = ''
