@@ -1,63 +1,64 @@
 <template>
-  <div class="student-management">
+  <div class="order-management">
     <div class="tool">
       <Form ref="query" :model="query" inline :label-width="80">
         <FormItem prop="studentId" label='学生姓名'>
           <Select filterable clearable style="width: 160px" v-model="query.studentId" placeholder="学生姓名">
-            <Option v-for="(label,value) in studentType" :key="value" :value="value">{{label}}</Option>
+            <Option v-for="(label,value) in orderStudentType" :key="value" :value="value">{{label}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="companyId" label='所在机构'>
-          <Select clearable style="width: 160px" v-model="query.companyId" placeholder="所在机构">
-            <Option v-for="(label,value) in companyType" :key="value" :value="value">{{label}}</Option>
-          </Select>
+        <FormItem label="订单编号" prop="orderNumber" :label-width="80">
+          <Input v-model="query.orderNumber" placeholder="订单编号" style="width: 160px" />
         </FormItem>
-        <FormItem prop="status" label='状态'>
-          <Select clearable style="width: 160px" v-model="query.status" placeholder="所在机构">
-            <Option value="1">正常</Option>
-            <Option value="2">结课</Option>
+        <FormItem label="订单日期" prop="orderStartDate" :label-width="80">
+          <DatePicker v-model="query.orderStartDate" type="date" placeholder="开始时间" style="width: 160px"></DatePicker>
+        </FormItem>
+        <FormItem label="—" class="date-line" prop="orderEndDate" :label-width="20">
+          <DatePicker v-model="query.orderEndDate" type="date" placeholder="结束时间" style="width: 160px"></DatePicker>
+        </FormItem>
+        <FormItem prop="orderType" label='订单类型'>
+          <Select clearable style="width: 160px" v-model="query.orderType" placeholder="订单类型">
+            <Option v-for="(label,value) in orderType" :key="value" :value="value">{{label}}</Option>
           </Select>
         </FormItem>
         <FormItem :label-width="20">
           <Button type="primary" @click="load(1)">查询</Button>
           <Button @click="reset()">重置</Button>
-          <Button type="primary" @click="add()">添加学生</Button>
+          <Button type="primary" @click="add()">添加订单</Button>
         </FormItem>
       </Form>
     </div>
-    <Table :loading="loading" stripe height="520" :columns="columns" :data="data"></Table>
+    <Table stripe height="520" :columns="columns" :data="data"></Table>
     <Page v-if="query.total>0" :total="query.total" show-total :page-size="query.pageSize" :current="query.pageNum" @on-change="change" />
     <Modal v-model="modal" :title="modalTitle" @on-cancel="modalCancel">
       <div class="modal-content">
         <Form ref="form" :model="form" :rules="formRules" :label-width="100">
-          <FormItem label="学生名称" prop="studentName">
-            <!--eslint-disable-next-line vue/no-parsing-error -->
-            <Input :maxlength="10" v-model="form.studentName"></Input>
-          </FormItem>
-          <FormItem label="所在机构" prop="companyId">
-            <Select @on-change='companyChange' style="width: 100%" v-model="form.companyId" placeholder="所在机构">
-              <Option v-for="(label,value) in companyType" :key="value" :value="value">{{label}}</Option>
+          <FormItem label="学生名称" prop="studentId">
+            <Select filterable clearable style="width: 100%" v-model="form.studentId" placeholder="学生姓名">
+              <Option v-for="(label,value) in orderStudentType" :key="value" :value="value">{{label}}</Option>
             </Select>
           </FormItem>
-          <FormItem label="所报科目" prop="subjectIds">
-            <Select multiple style="width: 100%" v-model="form.subjectIds" placeholder="科目">
-              <Option v-for="(label,value) in subjectMap" :key="value" :value="value">{{label}}</Option>
+          <FormItem label="课时数" prop="classCount">
+            <Input :maxlength="10" v-model="form.classCount"><span slot="append">小时</span></Input>
+          </FormItem>
+          <FormItem label="订单金额" prop="orderAmount">
+            <Input :maxlength="10" v-model="form.orderAmount"><span slot="append">元</span></Input>
+          </FormItem>
+          <FormItem label="单价">
+            <Input readonly :maxlength="10" v-model="orderUnit"><span slot="append">元</span></Input>
+          </FormItem>
+          <FormItem label="订单日期" prop="orderDate">
+            <DatePicker clearable v-model="form.orderDate" type="date" placeholder="订单日期" style="width: 100%"></DatePicker>
+          </FormItem>
+          <FormItem label="订单类型" prop="orderType">
+            <Select style="width: 100%" v-model="form.orderType" placeholder="订单类型">
+              <Option v-for="(label,value) in orderType" :key="value" :value="value">{{label}}</Option>
             </Select>
           </FormItem>
-          <FormItem label="课时费" prop="perHourPay">
-            <!--eslint-disable-next-line vue/no-parsing-error -->
-            <Input :maxlength="10" v-model="form.perHourPay"><span slot="append">元/小时</span></Input>
-          </FormItem>
-          <FormItem label="当前分数" prop="currentScore">
-            <!--eslint-disable-next-line vue/no-parsing-error -->
-            <Input :maxlength="10" v-model="form.currentScore"></Input>
-          </FormItem>
-          <FormItem label="目标分数" prop="targetScore">
-            <!--eslint-disable-next-line vue/no-parsing-error -->
-            <Input :maxlength="10" v-model="form.targetScore"></Input>
+          <FormItem label="订单号" prop="orderNumber">
+            <Input :maxlength="10" v-model="form.orderNumber"></Input>
           </FormItem>
           <FormItem label="备注" prop="description">
-            <!--eslint-disable-next-line vue/no-parsing-error -->
             <Input :maxlength="200" v-model="form.description" type="textarea" :autosize="{minRows: 3,maxRows: 3}"></Input>
           </FormItem>
         </Form>
@@ -77,10 +78,20 @@ export default {
   data () {
     return {
       getCatch: true,
-      loading: false,
+      orderType: {
+        '1': '淘宝订单',
+        '2': '淘宝试听',
+        '3': '推荐订单',
+        '4': '推荐试听',
+        '5': '其他'
+      },
       query: {
         studentName: '',
+        orderType: '',
+        orderNumber: '',
         companyId: '',
+        orderStartDate: '',
+        orderEndDate: '',
         total: 0,
         pageSize: 10,
         pageNum: 1
@@ -96,58 +107,59 @@ export default {
         }, {
           title: '学生姓名',
           key: 'studentName',
-          align: 'center',
-          width: 100
-        },
-        {
-          title: '所在机构',
-          key: 'studentName',
+          width: 100,
           align: 'center',
           render: (h, params) => {
-            return h('p', this.companyType[params.row.companyId])
+            return h('p', this.studentType[params.row.studentId])
           }
         },
         {
-          title: '所报科目',
+          title: '订单课时数',
+          key: 'classCount',
           align: 'center',
           render: (h, params) => {
-            return h('p', this.getSubject(params.row.subjectIds))
+            console.log(params.row.classCount)
+            return h('p', `${params.row.classCount || 0}小时`)
           }
         },
         {
-          title: '剩余课时(小时)',
-          key: 'surplus',
+          title: '订单金额',
+          key: 'orderAmount',
           align: 'center',
-          width: 150
+          render: (h, params) => {
+            return h('p', `${params.row.orderAmount || 0}元`)
+          }
         },
         {
-          title: '课时费(元/小时)',
+          title: '单价(元/小时)',
           key: 'perHourPay',
           align: 'center',
+          render: (h, params) => {
+            return h('p', `${parseInt(params.row.orderAmount / params.row.classCount)}`)
+          },
           width: 150
         },
         {
-          title: '当前分数',
-          key: 'currentScore',
+          title: '订单日期',
+          key: 'orderDate',
           align: 'center',
-          tooltip: true,
           render: (h, params) => {
-            return h('p', params.row.currentScore || '--')
+            return h('p', this.$lib.myMoment(new Date(params.row.orderDate)).formate('YYYY-MM-DD'))
           }
         },
         {
-          title: '目标分数',
-          key: 'targetScore',
+          title: '订单类型',
+          key: 'orderType',
           align: 'center',
           render: (h, params) => {
-            return h('p', params.row.targetScore || '--')
+            return h('p', this.orderType[params.row.orderType] || '--')
           }
         },
         {
-          title: '状态',
+          title: '订单号',
           align: 'center',
           render: (h, params) => {
-            return h('p', this.statusType[params.row.status])
+            return h('p', params.row.orderNumber || '--')
           }
         },
         {
@@ -193,17 +205,7 @@ export default {
                     this.delect(params.row)
                   }
                 }
-              }, '删除'),
-              h('a', {
-                style: {
-                  color: params.row.status === '1' ? '#2D8cF0' : 'green'
-                },
-                on: {
-                  click: () => {
-                    this.changeStatus(params.row)
-                  }
-                }
-              }, params.row.status === '1' ? '结课' : '复课')
+              }, '删除')
             ])
           }
         }
@@ -213,26 +215,28 @@ export default {
       modalTitle: '添加学生',
       modifyId: '',
       form: {
-        studentName: '',
-        companyId: '',
-        subjectIds: [],
-        currentScore: '',
-        targetScore: '',
-        perHourPay: '',
-        description: ''
+        studentId: '',
+        classCount: '',
+        orderDate: '',
+        orderAmount: '',
+        orderNumber: '',
+        description: '',
+        orderType: ''
       },
       formRules: {
-        studentName: [
-          { required: true, message: '学生名称不能为空', trigger: 'blur' }
+        studentId: [
+          { required: true, message: '学生名称不能为空', trigger: 'change' }
         ],
-        subjectIds: [
-          { required: true, type: 'array', min: 1, message: '请选择科目类型', trigger: 'change' },
-          { type: 'array', max: 10, message: '请选择科目类型', trigger: 'change' }
+        orderDate: [
+          { required: true, type: 'date', message: '订单日期不能为空', trigger: 'change' }
         ],
-        companyId: [
-          { required: true, message: '所在机构', trigger: 'blur' }
+        orderType: [
+          { required: true, message: '订单类型不能为空', trigger: 'change' }
         ],
-        perHourPay: [
+        classCount: [
+          { required: true, validator: validateWage, trigger: 'blur' }
+        ],
+        orderAmount: [
           { required: true, validator: validateWage, trigger: 'blur' }
         ]
       },
@@ -249,34 +253,29 @@ export default {
       }
     }
   },
+  computed: {
+    orderUnit () {
+      let { classCount, orderAmount } = this.form
+      if (!classCount || !orderAmount) return 0
+      return parseInt(orderAmount / classCount)
+    }
+  },
   created () {
+    this.load(1)
   },
   methods: {
-    nextTick () {
-      this.load(1)
-      this.surplusClass(56)
-    },
     load (page) {
-      this.loading = true
       this.query.pageNum = page
-      this.data = []
       let params = { ...this.query }
-      params.startTime = params.startTime ? this.$lib.myMoment(params.startTime).formate('YYYY-MM-DD') + ' 00:00:00' : ''
-      params.endTime = params.endTime ? this.$lib.myMoment(params.endTime).formate('YYYY-MM-DD') + ' 23:59:59' : ''
+      params.orderStartDate = params.orderStartDate ? this.$lib.myMoment(params.orderStartDate).formate('YYYY-MM-DD') + ' 00:00:00' : ''
+      params.orderEndDate = params.orderEndDate ? this.$lib.myMoment(params.orderEndDate).formate('YYYY-MM-DD') + ' 23:59:59' : ''
       this.$http.request({
         method: 'get',
-        url: `/api/student/page`,
+        url: `/api/order/page`,
         params
-      }).then(async (res) => {
+      }).then((res) => {
         let data = res.data.data
-        for (const item of data.data) {
-          item.surplus = '∞'
-          if (Object.hasOwnProperty.call(this.orderStudentType, item.studentId)) {
-            item.surplus = await this.surplusClass(item.studentId)
-          }
-          this.data.push(item)
-        }
-        this.loading = false
+        this.data = data.data
         this.query.total = data.total
       })
     },
@@ -293,7 +292,7 @@ export default {
     },
     edit (row) {
       this.modal = true
-      this.modifyId = row.studentId
+      this.modifyId = row.orderId
       this.modalTitle = `编辑${row.studentName}`
       for (const key in row) {
         if (this.form.hasOwnProperty(key)) {
@@ -309,11 +308,11 @@ export default {
     delect (data) {
       this.$Modal.confirm({
         title: '提示',
-        content: `确定要删除${data.studentName}学生`,
+        content: `确定要删除${this.studentType[data.studentId]}学生订单`,
         onOk: () => {
           this.$http.request({
             method: 'post',
-            url: `/api/student/delect/${data.studentId}`,
+            url: `/api/order/delect/${data.orderId}`,
             data: this.form
           }).then((res) => {
             if (res.data.code === 200) {
@@ -324,27 +323,12 @@ export default {
         }
       })
     },
-    changeStatus (data) {
-      this.$http.request({
-        method: 'post',
-        url: `/api/student/status`,
-        data: {
-          studentId: data.studentId,
-          status: data.status === '1' ? '2' : '1'
-        }
-      }).then((res) => {
-        if (res.data.code === 200) {
-          this.load(this.query.pageNum)
-          this.$Message.success('修改成功')
-        }
-      })
-    },
     modalOk () {
       this.$refs.form.validate((valid) => {
         if (valid) {
           let data = { ...this.form }
-          data.subjectIds = data.subjectIds.join(',')
-          let url = this.modifyId ? `/api/student/update/${this.modifyId}` : `/api/student/add`
+          data.orderDate = this.$lib.myMoment(data.orderDate).formate()
+          let url = this.modifyId ? `/api/order/update/${this.modifyId}` : `/api/order/add`
           this.$http.request({
             method: 'post',
             url: url,

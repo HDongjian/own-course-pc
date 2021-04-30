@@ -163,7 +163,9 @@ export default {
       addTableData: [],
       myEditData: {},
       editId: '',
-      subjectMap: {}
+      subjectMap: {},
+      orderCompanyType: {},
+      companyType: {}
     }
   },
   props: {
@@ -194,6 +196,7 @@ export default {
   created () {
     this.getStudent()
     this.getSubjects()
+    this.getCompany()
   },
   methods: {
     addCourse (data) {
@@ -293,14 +296,22 @@ export default {
       this.$refs.form.resetFields()
       this.form.isAudition = '0'
     },
-    studentChange (value) {
+    async studentChange (value) {
       let subjectIds = ''
       this.form.subjectId = ''
       this.subjectType = {}
       for (const student of this.studentList) {
         if (student.studentId === Number(value)) {
+          console.log(student)
           subjectIds = student.subjectIds
           this.form.price = student.perHourPay
+          if (Object.hasOwnProperty.call(this.orderCompanyType, student.companyId)) {
+            let surplus = await this.surplusClass(value)
+            this.$Notice.success({
+              title: '课程提醒',
+              desc: `该学生${this.studentType[value]}剩余${surplus}节课程`
+            })
+          }
         }
       }
       if (!subjectIds) return
@@ -326,6 +337,20 @@ export default {
         this.studentList = res.data.data
         for (const data of res.data.data) {
           this.$set(this.studentType, data.studentId, data.studentName)
+        }
+      })
+    },
+    getCompany () {
+      return this.$http.request({
+        method: 'get',
+        url: `/api/company/list`
+      }).then((res) => {
+        this.companyList = res.data.data
+        for (const data of res.data.data) {
+          if (data.isOrder === '1') {
+            this.$set(this.orderCompanyType, data.companyId, data.companyName)
+          }
+          this.$set(this.companyType, data.companyId, data.companyName)
         }
       })
     },

@@ -50,7 +50,7 @@
             </Menu>
           </Sider>
           <Layout style="height:100%;" class="left-layout">
-            <Content>
+            <Content :class="{'right-content':$route.path!=='/'}">
               <router-view/>
             </Content>
         </Layout>

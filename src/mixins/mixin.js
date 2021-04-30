@@ -8,7 +8,8 @@ export default {
       studentType: {},
       companyList: [],
       subjectType: {},
-      companyType: {}
+      companyType: {},
+      orderCompanyType: {}
     }
   },
   mounted () {
@@ -18,9 +19,50 @@ export default {
     ...mapState({ account: 'account' }),
     isStudent () {
       return !!this.account.studentId
+    },
+    orderStudentType () {
+      let result = {}
+      for (const item of this.studentList) {
+        if (Object.hasOwnProperty.call(this.orderCompanyType, item.companyId)) {
+          result[item.studentId] = item.studentName
+        }
+      }
+      return result
     }
   },
   methods: {
+    async surplusClass (studentId) {
+      let have = await this.getAllCouseByStudentId(studentId)
+      let orderTotal = await this.getAllOrderByStudentId(studentId)
+      return orderTotal - have
+    },
+    getAllCouseByStudentId (studentId) {
+      return this.$http.request({
+        method: 'get',
+        url: `/api/course/list?studentId=${studentId}`
+      }).then((res) => {
+        let data = res.data.data || []
+        let result = 0
+        for (const item of data) {
+          let second = new Date(item.endTime).getTime() - new Date(item.startTime).getTime()
+          result += (second / 1000 / 60 / 60)
+        }
+        return result
+      })
+    },
+    getAllOrderByStudentId (studentId) {
+      return this.$http.request({
+        method: 'get',
+        url: `/api/order/list?studentId=${studentId}`
+      }).then((res) => {
+        let data = res.data.data || []
+        let result = 0
+        for (const item of data) {
+          result += Number(item.classCount || '0')
+        }
+        return result
+      })
+    },
     async initCatch () {
       if (!this.getCatch) return
       this.studentList = await this.getStudent()
@@ -59,6 +101,9 @@ export default {
       }).then((res) => {
         this.companyList = res.data.data
         for (const data of res.data.data) {
+          if (data.isOrder === '1') {
+            this.$set(this.orderCompanyType, data.companyId, data.companyName)
+          }
           this.$set(this.companyType, data.companyId, data.companyName)
         }
       })

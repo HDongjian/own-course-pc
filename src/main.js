@@ -9,6 +9,7 @@ import Http from './utils/http'
 import Components from './components/index.js'
 import mixin from './mixins/mixin'
 import icons from './icons/index'
+import scroll from 'vue-seamless-scroll'
 import './styles/index.less'
 import './utils/polyfill'
 
@@ -18,6 +19,7 @@ Vue.use(lib)
 Vue.use(Http)
 Vue.use(Bus)
 Vue.use(Components)
+Vue.use(scroll)
 Vue.config.productionTip = false
 Vue.mixin(mixin)
 Vue.use(icons)

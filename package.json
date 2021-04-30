@@ -17,6 +17,7 @@
     "js-md5": "^0.7.3",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
+    "vue-seamless-scroll": "^1.1.23",
     "vuex": "^3.1.1"
   },
   "devDependencies": {

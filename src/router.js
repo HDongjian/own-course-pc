@@ -97,6 +97,12 @@ let router = new Router({
           name: 'IconManagement',
           meta: { intercept: true },
           component: () => import('./views/system/IconManagement.vue')
+        },
+        {
+          path: '/order-management',
+          name: 'OrderManagement',
+          meta: { intercept: true },
+          component: () => import('./views/order/OrderManagement.vue')
         }
       ]
     }
