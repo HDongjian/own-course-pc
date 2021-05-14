@@ -28,18 +28,21 @@
         </FormItem>
       </Form>
     </div>
-    <Table stripe height="520" :columns="columns" :data="data"></Table>
+    <Table :loading="loading" stripe height="520" :columns="columns" :data="data"></Table>
     <Page v-if="query.total>0" :total="query.total" show-total :page-size="query.pageSize" :current="query.pageNum" @on-change="change" />
     <Modal v-model="modal" :title="modalTitle" @on-cancel="modalCancel">
       <div class="modal-content">
-        <Form ref="form" :model="form" :rules="formRules" :label-width="100">
+        <Form ref="form" :model="form" :rules="formRules" :label-width="110">
           <FormItem label="学生名称" prop="studentId">
             <Select filterable clearable style="width: 100%" v-model="form.studentId" placeholder="学生姓名">
               <Option v-for="(label,value) in orderStudentType" :key="value" :value="value">{{label}}</Option>
             </Select>
           </FormItem>
           <FormItem label="课时数" prop="classCount">
-            <Input :maxlength="10" v-model="form.classCount"><span slot="append">小时</span></Input>
+            <Input :maxlength="10" v-model="form.classCount"></Input>
+          </FormItem>
+          <FormItem label="每节课分钟数" prop="classMinute">
+            <Input :maxlength="10" v-model="form.classMinute"><span slot="append">分钟</span></Input>
           </FormItem>
           <FormItem label="订单金额" prop="orderAmount">
             <Input :maxlength="10" v-model="form.orderAmount"><span slot="append">元</span></Input>
@@ -68,6 +71,13 @@
         <Button type="primary" @click="modalOk()">确定</Button>
       </div>
     </Modal>
+    <Modal v-model="detailModal" title="课时记录" width="80%">
+      <Card>
+        <div style="height:36px;line-height:36px" slot="title">课时记录 <Button class="fr" type="primary" @click="downLoadCourse()">导出</Button></div>
+        <course-table ref="couseTable" :data="courseList"></course-table>
+      </Card>
+      <div slot="footer"></div>
+    </Modal>
   </div>
 </template>
 
@@ -77,6 +87,7 @@ export default {
 
   data () {
     return {
+      loading: true,
       getCatch: true,
       orderType: {
         '1': '淘宝订单',
@@ -116,11 +127,12 @@ export default {
         {
           title: '订单课时数',
           key: 'classCount',
+          align: 'center'
+        },
+        {
+          title: '每节课分钟数',
           align: 'center',
-          render: (h, params) => {
-            console.log(params.row.classCount)
-            return h('p', `${params.row.classCount || 0}小时`)
-          }
+          key: 'classMinute'
         },
         {
           title: '订单金额',
@@ -205,7 +217,17 @@ export default {
                     this.delect(params.row)
                   }
                 }
-              }, '删除')
+              }, '删除'),
+              h('a', {
+                style: {
+                  color: '#2D8cF0'
+                },
+                on: {
+                  click: () => {
+                    this.detail(params.row)
+                  }
+                }
+              }, '课时记录')
             ])
           }
         }
@@ -221,6 +243,7 @@ export default {
         orderAmount: '',
         orderNumber: '',
         description: '',
+        classMinute: '',
         orderType: ''
       },
       formRules: {
@@ -234,6 +257,9 @@ export default {
           { required: true, message: '订单类型不能为空', trigger: 'change' }
         ],
         classCount: [
+          { required: true, validator: validateWage, trigger: 'blur' }
+        ],
+        classMinute: [
           { required: true, validator: validateWage, trigger: 'blur' }
         ],
         orderAmount: [
@@ -250,7 +276,9 @@ export default {
       statusType: {
         1: '正常',
         2: '结课'
-      }
+      },
+      detailModal: false,
+      courseList: []
     }
   },
   computed: {
@@ -277,6 +305,26 @@ export default {
         let data = res.data.data
         this.data = data.data
         this.query.total = data.total
+        this.loading = false
+      })
+    },
+    async detail (row) {
+      this.detailModal = true
+      this.$http.request({
+        method: 'get',
+        url: `/api/course/list?orderId=${row.orderId}`
+      }).then((res) => {
+        let data = res.data.data || []
+        data = data.sort((x, y) => {
+          return new Date(x.startTime).getTime() - new Date(y.startTime).getTime()
+        })
+        this.courseList = data.map(item => {
+          item.studentName = this.studentType[item.studentId]
+          item.companyName = this.companyType[item.companyId]
+          item.subjectName = this.subjectType[item.subjectId]
+          item.orderType = this.orderType[row.orderType]
+          return item
+        })
       })
     },
     change (page) {

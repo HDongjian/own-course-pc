@@ -245,6 +245,9 @@
     box-sizing: border-box;
     height: ~"calc(100% - 70px)";
     overflow: auto;
+    &::-webkit-scrollbar{
+      width: 0;
+    }
   }
 }
 
@@ -282,7 +285,7 @@
     border-top: @table-border;
     border-right: @table-border;
     box-sizing: border-box;
-    width: ~"calc(100% - 4px)";
+    width: ~"calc(100% - 0px)";
     position: absolute;
     left: 0;
     top: 69px;

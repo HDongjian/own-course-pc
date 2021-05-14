@@ -34,7 +34,7 @@ export default {
     async surplusClass (studentId) {
       let have = await this.getAllCouseByStudentId(studentId)
       let orderTotal = await this.getAllOrderByStudentId(studentId)
-      return orderTotal - have
+      return (orderTotal - have) / 60
     },
     getAllCouseByStudentId (studentId) {
       return this.$http.request({
@@ -45,7 +45,7 @@ export default {
         let result = 0
         for (const item of data) {
           let second = new Date(item.endTime).getTime() - new Date(item.startTime).getTime()
-          result += (second / 1000 / 60 / 60)
+          result += (second / 1000 / 60)
         }
         return result
       })
@@ -58,7 +58,47 @@ export default {
         let data = res.data.data || []
         let result = 0
         for (const item of data) {
-          result += Number(item.classCount || '0')
+          result += Number(item.classCount * item.classMinute || '0')
+        }
+        return result
+      })
+    },
+    getAllOrderListByStd (studentId) {
+      return this.$http.request({
+        method: 'get',
+        url: `/api/order/list?studentId=${studentId}`
+      }).then(async res => {
+        let data = res.data.data || []
+        let courseResult = []
+        for (const order of data) {
+          let consume = await this.getAllCourseByOrder(order.orderId)
+          courseResult.push({
+            ...order,
+            consume
+          })
+        }
+        courseResult = courseResult.map(item => {
+          let hh = item.classMinute * item.classCount / 60
+          let ch = item.consume / 60
+          item.haverHour = hh
+          item.surplusHour = hh - ch
+          item.surplusCount = item.surplusHour * 60 / item.classMinute
+          item.disabled = item.surplusHour === 0
+          return item
+        })
+        return courseResult
+      })
+    },
+    getAllCourseByOrder (orderId) {
+      return this.$http.request({
+        method: 'get',
+        url: `/api/course/list?orderId=${orderId}`
+      }).then((res) => {
+        let data = res.data.data || []
+        let result = 0
+        for (const item of data) {
+          let second = new Date(item.endTime).getTime() - new Date(item.startTime).getTime()
+          result += (second / 1000 / 60)
         }
         return result
       })

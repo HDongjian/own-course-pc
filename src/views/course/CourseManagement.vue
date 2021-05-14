@@ -37,7 +37,7 @@
         </FormItem>
       </Form>
     </div>
-    <Table stripe height="520" :columns="columns" :data="data"></Table>
+    <Table :loading="loading" stripe height="520" :columns="columns" :data="data"></Table>
     <Page v-if="query.total>0" :total="query.total" show-total :page-size="query.pageSize" :current="query.pageNum" @on-change="change" />
     <add-course :modalData="modal" :editData="editData" @close="addClose"></add-course>
   </div>
@@ -49,6 +49,7 @@ export default {
   data () {
     return {
       getCatch: true,
+      loading: true,
       modal: false,
       editData: {},
       query: {
@@ -184,6 +185,7 @@ export default {
         let data = res.data.data
         this.data = data.data
         this.query.total = data.total
+        this.loading = false
       })
     },
     reset () {

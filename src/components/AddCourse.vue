@@ -3,35 +3,43 @@
     <div class="modal-content">
       <Form ref="form" :model="form" inline :rules="formRules" :label-width="80">
         <FormItem label="学生姓名" prop="studentId">
-          <Select filterable clearable style="width: 160px" @on-change='studentChange' v-model="form.studentId" placeholder="学生姓名">
+          <Select filterable clearable :disabled="!!editId" style="width: 130px" @on-change='studentChange' v-model="form.studentId" placeholder="学生姓名">
             <Option v-for="(item,value) in studentList" :key="value" :value="String(item.studentId)">{{item.studentName}}</Option>
           </Select>
         </FormItem>
+        <FormItem label="订单" prop="orderId" v-if="surplusList&&surplusList.length">
+          <Select clearable style="width: 250px" v-model="form.orderId" @on-change='orderChange'  placeholder="订单">
+            <Option :disabled="item.disabled" v-for="(item,value) in surplusList" :key="value" :value="String(item.orderId)">{{orderType[item.orderType]}}-共{{item.classCount}}({{item.classMinute}}分/节)—余{{item.surplusCount}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="剩余课时" v-if="surplusCount&&!editId">
+          <Input style="width: 130px" readonly :maxlength="10" v-model="surplusCount"><span slot="append">小时</span></Input>
+        </FormItem>
         <FormItem label="单价" prop="price">
-          <Input style="width: 160px" :maxlength="10" v-model="form.price"><span slot="append">元/小时</span></Input>
+          <Input style="width: 130px" :maxlength="10" v-model="form.price"><span slot="append">元/小时</span></Input>
         </FormItem>
         <FormItem label="科目" prop="subjectId">
-          <Select clearable style="width: 160px" v-model="form.subjectId" placeholder="科目">
+          <Select clearable style="width: 130px" v-model="form.subjectId" placeholder="科目">
             <Option v-for="(label,value) in subjectType" :key="value" :value="value">{{label}}</Option>
           </Select>
         </FormItem>
         <FormItem label="上课日期" prop="date">
-          <DatePicker clearable v-model="form.date" type="date" placeholder="日期" style="width: 160px"></DatePicker>
+          <DatePicker clearable v-model="form.date" type="date" placeholder="日期" style="width: 130px"></DatePicker>
         </FormItem>
         <FormItem label="上课时间" prop="time">
-          <Input style="width: 160px" :maxlength="5" v-model="form.time"></Input>
+          <Input style="width: 130px" :maxlength="5" v-model="form.time"></Input>
         </FormItem>
         <FormItem label="上课时长" prop="duration">
-          <Input style="width: 160px" :maxlength="10" v-model="form.duration"><span slot="append">分钟</span></Input>
+          <Input style="width: 130px" :maxlength="10" v-model="form.duration"><span slot="append">分钟</span></Input>
         </FormItem>
         <FormItem label="课时费" prop="unitPrice">
-          <Input style="width: 160px" readonly :maxlength="10" v-model="unitPrice"><span slot="append">元</span></Input>
+          <Input style="width: 130px" readonly :maxlength="10" v-model="unitPrice"><span slot="append">元</span></Input>
         </FormItem>
         <FormItem label="是否试听" prop="isAudition">
-          <i-switch false-value="0" true-value="1" v-model="form.isAudition" size="large">
-            <span slot="open">是</span>
-            <span slot="close">否</span>
-          </i-switch>
+          <Select clearable style="width: 130px" v-model="form.isAudition" placeholder="是否试听">
+            <Option value="0">否</Option>
+            <Option value="1">是</Option>
+          </Select>
         </FormItem>
         <FormItem v-if="!editId" :label-width="20">
           <Button type="primary" @click="addTable()">添加</Button>
@@ -61,6 +69,13 @@ export default {
       callback()
     }
     return {
+      orderType: {
+        '1': '淘宝订单',
+        '2': '淘宝试听',
+        '3': '推荐订单',
+        '4': '推荐试听',
+        '5': '其他'
+      },
       modal: false,
       modalTitle: '添加课程',
       modifyId: '',
@@ -71,7 +86,8 @@ export default {
         price: '',
         date: '',
         time: '',
-        duration: '90'
+        orderId: '',
+        duration: '70'
       },
       formRules: {
         isAudition: [
@@ -79,6 +95,9 @@ export default {
         ],
         studentId: [
           { required: true, message: '学生姓名不能为空', trigger: 'change' }
+        ],
+        orderId: [
+          { required: true, message: '订单不能为空', trigger: 'change' }
         ],
         price: [
           { required: true, validator: validateWage, trigger: 'blur' }
@@ -165,7 +184,9 @@ export default {
       editId: '',
       subjectMap: {},
       orderCompanyType: {},
-      companyType: {}
+      companyType: {},
+      surplusCount: '',
+      surplusList: []
     }
   },
   props: {
@@ -260,7 +281,7 @@ export default {
       console.log(this.form)
       this.$refs.form.validate((valid) => {
         if (!valid) return
-        let { studentId, subjectId, duration, isAudition } = this.form
+        let { studentId, subjectId, duration, isAudition, orderId } = this.form
         let { startTime, endTime } = this.$lib.getStartEndTime(this.form)
         let data = {
           studentId,
@@ -269,6 +290,7 @@ export default {
           endTime,
           duration,
           isAudition,
+          orderId,
           unitPrice: this.unitPrice
         }
         let result = this.$lib.hasPeriodOrNot(data, this.addTableData)
@@ -295,22 +317,31 @@ export default {
       this.$emit('close')
       this.$refs.form.resetFields()
       this.form.isAudition = '0'
+      this.form.orderId = ''
+    },
+    orderChange (value) {
+      for (const order of this.surplusList) {
+        if (order.orderId === Number(value)) {
+          this.form.duration = order.classMinute
+          this.form.isAudition = ['2', '4'].includes(order.orderType) ? '1' : '0'
+        }
+      }
     },
     async studentChange (value) {
       let subjectIds = ''
       this.form.subjectId = ''
       this.subjectType = {}
+      this.surplusCount = ''
+      this.surplusList = []
       for (const student of this.studentList) {
         if (student.studentId === Number(value)) {
-          console.log(student)
           subjectIds = student.subjectIds
           this.form.price = student.perHourPay
           if (Object.hasOwnProperty.call(this.orderCompanyType, student.companyId)) {
-            let surplus = await this.surplusClass(value)
-            this.$Notice.success({
-              title: '课程提醒',
-              desc: `该学生${this.studentType[value]}剩余${surplus}节课程`
-            })
+            let surplus = await this.getAllOrderListByStd(student.studentId)
+            this.surplusList = surplus
+            // let surplus = await this.surplusClass(value)
+            // this.surplusCount = surplus
           }
         }
       }
@@ -365,7 +396,7 @@ export default {
       })
     },
     formToData () {
-      let { studentId, subjectId, isAudition } = this.form
+      let { studentId, subjectId, isAudition, orderId } = this.form
       let { startTime, endTime } = this.$lib.getStartEndTime(this.form)
       let data = {
         studentId,
@@ -373,19 +404,22 @@ export default {
         startTime,
         endTime,
         isAudition,
+        orderId,
         unitPrice: this.unitPrice
       }
       return data
     },
     dataToForm (data) {
-      let { studentId, subjectId, startTime, endTime, isAudition } = data
+      let { studentId, subjectId, startTime, endTime, isAudition, orderId } = data
       this.form.studentId = String(studentId)
       this.form.subjectId = String(subjectId)
       this.form.isAudition = isAudition
+      this.form.orderId = String(orderId)
       this.studentChange(this.form.studentId)
       this.form.date = this.$lib.myMoment(startTime).formate('YYYY-MM-DD')
       this.form.time = this.$lib.myMoment(startTime).formate('HH:mm')
       this.form.duration = (new Date(endTime).getTime() - new Date(startTime).getTime()) / 60000
+      console.log(this.form)
     }
   }
 }
