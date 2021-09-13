@@ -285,7 +285,7 @@ export default {
           align: 'center'
         },
         {
-          title: '剩余课时数数',
+          title: '剩余课时数',
           align: 'center',
           width: 120,
           key: 'surplusCount'

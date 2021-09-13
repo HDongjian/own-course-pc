@@ -64,7 +64,7 @@ export default {
   data () {
     return {
       classOption: {
-        limitMoveNum: 1,
+        limitMoveNum: 5,
         hoverStop: true,
         step: 0.5
       },
@@ -155,7 +155,7 @@ export default {
         // this.classes[d] = { ...subjects }
       }
       let option = {
-        color: ['#f65342', '#00ddff'],
+        color: ['#74c3f9', '#00ddff'],
         backgroundColor: '#fcfcfc',
         title: {
           show: false
@@ -226,7 +226,7 @@ export default {
           type: 'line',
           smooth: true,
           areaStyle: {
-            color: '#faddd3'
+            color: '#b4daf8'
           }
         }
       }

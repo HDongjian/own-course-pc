@@ -4,7 +4,7 @@
     <Layout class="hw-100">
       <Header>
         <h1 @click="menuSelect('/')" class="title">
-          <my-icon icon-class="penguin-1"></my-icon>
+          <!-- <my-icon icon-class="header"></my-icon> -->
           <span>{{title}}</span>
         </h1>
         <div v-if="account.userId" class="account">

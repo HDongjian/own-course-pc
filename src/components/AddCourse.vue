@@ -324,6 +324,7 @@ export default {
         if (order.orderId === Number(value)) {
           this.form.duration = order.classMinute
           this.form.isAudition = ['2', '4'].includes(order.orderType) ? '1' : '0'
+          this.form.price = order.orderAmount / (order.classCount * order.classMinute / 60)
         }
       }
     },
