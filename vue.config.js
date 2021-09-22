@@ -2,7 +2,7 @@ const path = require('path')
 const resolve = (dir) => path.join(__dirname, dir)
 module.exports = {
   publicPath: './',
-  outputDir: 'ownpc',
+  outputDir: 'dist',
   devServer: {
     port: 4006,
     proxy: 'http://course.hdongyu.com',

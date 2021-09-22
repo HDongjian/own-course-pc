@@ -53,6 +53,12 @@
         <div ref="courseLine" class="today-class"></div>
       </div>
       </Col>
+      <Col span="24" style="margin-top:16px">
+      <div class="card">
+        <h2>订单数量</h2>
+        <div ref="orderBar" class="today-class"></div>
+      </div>
+      </Col>
     </Row>
   </div>
   </div>
@@ -113,6 +119,117 @@ export default {
         endTime: this.$lib.myMoment().formate('YYYY-MM-DD') + ' 23:59:59'
       })
       this.getCourse(params)
+      this.getOrders()
+    },
+    async getOrders () {
+      let data = await this.simpleGet('/api/order/list')
+      let dateMaps = {}
+      let map = { order: '订单数', amount: '金额/千', count: '课时数/小时' }
+      for (const item of data) {
+        let date = this.$lib.myMoment(item.orderDate).formate('YYYY/MM')
+        if (!Object.hasOwnProperty.call(dateMaps, date)) {
+          dateMaps[date] = { 'order': 0, 'amount': 0, 'count': 0 }
+        }
+        dateMaps[date]['order'] += 1
+        dateMaps[date]['count'] += Number(item.classCount * item.classMinute / 60)
+        dateMaps[date]['amount'] = (dateMaps[date]['amount'] * 1000 + Number(item.orderAmount)) / 1000
+      }
+      console.log(dateMaps)
+      let myChart = echarts.init(this.$refs.orderBar); let legend = []; let series = []; let yAxis = []
+      let keys = Object.keys(dateMaps).sort((x, y) => { return x - y })
+      for (const key in map) {
+        legend.push(map[key])
+        series.push({ name: map[key],
+          key,
+          type: 'bar',
+          barWidth: 12,
+          itemStyle: {
+            emphasis: {
+              barBorderRadius: 8
+            },
+            normal: {
+              barBorderRadius: 8
+            } },
+          data: []
+        })
+      }
+      for (const key of keys) {
+        let maps = dateMaps[key]
+        for (const item of series) {
+          item.data.push(maps[item.key])
+        }
+        // yAxis.push(this.$lib.myMoment(key + '-01').formate('M月'))
+        yAxis.push(key)
+      }
+      let option = {
+        color: [ '#40a9ff', '#5AD8A6', '#f7c739' ],
+        title: {
+          show: false
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        legend: {
+          icon: 'circle',
+          itemWidth: 8,
+          right: '2%',
+          top: '0%',
+          show: true,
+          data: legend,
+          textStyle: {
+            // color: '#FFFFFF'
+          }
+        },
+        grid: {
+          top: '12%',
+          left: '2%',
+          right: '2%',
+          bottom: '2%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: yAxis
+          // axisLine: {
+          //   lineStyle: {
+          //     color: '#244658'
+          //   }
+          // },
+          // axisTick: {
+          //   show: false
+          // },
+          // axisLabel: {
+          //   color: '#B9ECFF'
+          // }
+        },
+        yAxis: {
+          // name: '总\n量',
+          nameLocation: 'end',
+          nameTextStyle: {
+            // color: '#B9ECFF',
+            // verticalAlign: 'bottom',
+            // padding: [0, 100, -40, -20]
+          },
+          splitNumber: 6,
+          type: 'value',
+          axisLine: {
+            show: false
+          }
+          // axisLabel: {
+          //   color: '#B9ECFF'
+          // },
+          // splitLine: {
+          //   lineStyle: {
+          //     color: ['#244658']
+          //   }
+          // }
+        },
+        series
+      }
+      myChart.setOption(option)
     },
     getCourse (params) {
       this.$http.request({
