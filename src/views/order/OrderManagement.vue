@@ -4,9 +4,13 @@
       <Form ref="query" :model="query" inline :label-width="80">
         <FormItem prop="studentId" label='学生姓名'>
           <Select filterable clearable style="width: 160px" v-model="query.studentId" placeholder="学生姓名">
-            <Option v-for="(label,value) in orderStudentType" :key="value" :value="value">{{label}}</Option>
+            <!-- <Option v-for="(label,value) in studentType" :key="value" :value="value">{{label}}</Option> -->
+            <Option v-for="(item,value) in studentList" :key="value" :value="item.studentId">{{item.studentName}}</Option>
           </Select>
         </FormItem>
+         <!-- <FormItem prop="studentName" label="学生姓名">
+          <Input style="width: 160px" placeholder="请输入学生姓名" :maxlength="10" v-model="query.studentName"></Input>
+        </FormItem> -->
         <FormItem label="订单编号" prop="orderNumber" :label-width="80">
           <Input v-model="query.orderNumber" placeholder="订单编号" style="width: 160px" />
         </FormItem>
@@ -98,6 +102,7 @@ export default {
       },
       query: {
         studentName: '',
+        studentId: '',
         orderType: '',
         orderNumber: '',
         companyId: '',
@@ -115,6 +120,11 @@ export default {
           render: (h, params) => {
             return h('p', (this.query.pageNum - 1) * 10 + params.index + 1)
           }
+        },
+        {
+          title: '订单ID',
+          key: 'orderId',
+          align: 'center'
         }, {
           title: '学生姓名',
           key: 'studentName',
@@ -131,6 +141,7 @@ export default {
         },
         {
           title: '每节课分钟数',
+          width: 120,
           align: 'center',
           key: 'classMinute'
         },
@@ -178,7 +189,7 @@ export default {
           title: '备注',
           key: 'description',
           align: 'center',
-          width: 250,
+          width: 150,
           tooltip: true
         },
         {
@@ -288,8 +299,9 @@ export default {
       return parseInt(orderAmount / classCount)
     }
   },
-  created () {
+  async created () {
     this.load(1)
+    this.studentList = await this.getStudent()
   },
   methods: {
     load (page) {

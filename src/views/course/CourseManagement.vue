@@ -4,7 +4,7 @@
       <Form ref="query" :model="query" inline :label-width="80">
         <FormItem prop="studentId" label='学生姓名'>
           <Select filterable clearable style="width: 160px" v-model="query.studentId" placeholder="学生姓名">
-            <Option v-for="(label,value) in studentType" :key="value" :value="value">{{label}}</Option>
+            <Option v-for="(item,value) in studentList" :key="value" :value="item.studentId">{{item.studentName}}</Option>
           </Select>
         </FormItem>
         <FormItem prop="companyId" label='所在机构'>
@@ -166,6 +166,7 @@ export default {
     }
   },
   created () {
+    this.initCatch()
     this.load(1)
   },
   methods: {

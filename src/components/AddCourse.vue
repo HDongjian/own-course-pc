@@ -340,7 +340,7 @@ export default {
           this.form.price = student.perHourPay
           if (Object.hasOwnProperty.call(this.orderCompanyType, student.companyId)) {
             let surplus = await this.getAllOrderListByStd(student.studentId)
-            this.surplusList = surplus
+            this.surplusList = surplus.sort((x, y) => { return y.surplusHour - x.surplusHour })
             // let surplus = await this.surplusClass(value)
             // this.surplusCount = surplus
           }

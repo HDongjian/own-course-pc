@@ -13,7 +13,7 @@ export default {
     }
   },
   mounted () {
-    this.initCatch()
+    // this.initCatch()
   },
   computed: {
     ...mapState({ account: 'account' }),
@@ -69,24 +69,13 @@ export default {
         url: `/api/order/list?studentId=${studentId}`
       }).then(async res => {
         let data = res.data.data || []
-        let courseResult = []
-        for (const order of data) {
-          let consume = await this.getAllCourseByOrder(order.orderId)
-          courseResult.push({
-            ...order,
-            consume
-          })
-        }
-        courseResult = courseResult.map(item => {
+        return data.map(item => {
           let hh = item.classMinute * item.classCount / 60
-          let ch = item.consume / 60
           item.haverHour = hh
-          item.surplusHour = hh - ch
           item.surplusCount = item.surplusHour * 60 / item.classMinute
           item.disabled = item.surplusHour === 0
           return item
         })
-        return courseResult
       })
     },
     getAllCourseByOrder (orderId) {

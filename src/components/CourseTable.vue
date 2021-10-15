@@ -17,6 +17,11 @@ export default {
           align: 'center'
         },
         {
+          title: '订单ID',
+          key: 'orderId',
+          align: 'center'
+        },
+        {
           title: '订单类型',
           key: 'orderType',
           align: 'center'

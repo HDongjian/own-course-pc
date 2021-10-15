@@ -195,6 +195,7 @@ export default {
     }
   },
   created () {
+    this.initCatch()
     this.initData()
   },
   methods: {

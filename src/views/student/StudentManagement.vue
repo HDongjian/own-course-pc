@@ -2,10 +2,13 @@
   <div class="student-management">
     <div class="tool">
       <Form ref="query" :model="query" inline :label-width="80">
-        <FormItem prop="studentId" label='学生姓名'>
+        <!-- <FormItem prop="studentId" label='学生姓名'>
           <Select filterable clearable style="width: 160px" v-model="query.studentId" placeholder="学生姓名">
             <Option v-for="(label,value) in studentType" :key="value" :value="value">{{label}}</Option>
           </Select>
+        </FormItem> -->
+        <FormItem prop="studentName" label="学生姓名">
+          <Input style="width: 160px" placeholder="请输入学生姓名" :maxlength="10" v-model="query.studentName"></Input>
         </FormItem>
         <FormItem prop="companyId" label='所在机构'>
           <Select clearable style="width: 160px" v-model="query.companyId" placeholder="所在机构">
@@ -90,6 +93,7 @@ export default {
       getCatch: true,
       loading: true,
       query: {
+        studentId: '',
         studentName: '',
         companyId: '',
         total: 0,
@@ -112,18 +116,13 @@ export default {
         },
         {
           title: '所在机构',
-          key: 'studentName',
-          align: 'center',
-          render: (h, params) => {
-            return h('p', this.companyType[params.row.companyId])
-          }
+          key: 'companyName',
+          align: 'center'
         },
         {
           title: '所报科目',
           align: 'center',
-          render: (h, params) => {
-            return h('p', this.getSubject(params.row.subjectIds))
-          }
+          key: 'subjectNames'
         },
         // {
         //   title: '剩余课时(小时)',
@@ -136,6 +135,12 @@ export default {
           key: 'perHourPay',
           align: 'center',
           width: 150
+        },
+        {
+          title: '剩余课时数',
+          key: 'surplusHour',
+          align: 'center',
+          width: 120
         },
         {
           title: '当前分数',
@@ -280,6 +285,11 @@ export default {
           align: 'center'
         },
         {
+          title: '订单ID',
+          key: 'orderId',
+          align: 'center'
+        },
+        {
           title: '订单课时数',
           key: 'classCount',
           align: 'center'
@@ -317,6 +327,7 @@ export default {
           title: '订单日期',
           key: 'orderDate',
           align: 'center',
+          width: '120',
           render: (h, params) => {
             return h('p', this.$lib.myMoment(new Date(params.row.orderDate)).formate('YYYY-MM-DD'))
           }
@@ -340,7 +351,7 @@ export default {
           title: '备注',
           key: 'description',
           align: 'center',
-          width: 250,
+          width: 150,
           tooltip: true
         },
         {
@@ -356,11 +367,11 @@ export default {
     }
   },
   created () {
+    this.initCatch()
   },
   methods: {
     nextTick () {
       this.load(1)
-      this.surplusClass(56)
     },
     load (page) {
       this.query.pageNum = page
