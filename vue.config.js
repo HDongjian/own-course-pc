@@ -5,9 +5,9 @@ module.exports = {
   outputDir: 'dist',
   devServer: {
     port: 4006,
-    // proxy: 'http://course.hdongyu.com',
+    proxy: 'https://course.hdongyu.com',
     // proxy: 'http://47.104.69.49/api',
-    proxy: 'http://localhost:3006',
+    // proxy: 'http://localhost:3006',
     open: false
   },
   chainWebpack: (config) => {

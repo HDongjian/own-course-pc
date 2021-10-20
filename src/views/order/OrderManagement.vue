@@ -5,10 +5,10 @@
         <FormItem prop="studentId" label='学生姓名'>
           <Select filterable clearable style="width: 160px" v-model="query.studentId" placeholder="学生姓名">
             <!-- <Option v-for="(label,value) in studentType" :key="value" :value="value">{{label}}</Option> -->
-            <Option v-for="(item,value) in studentList" :key="value" :value="item.studentId">{{item.studentName}}</Option>
+            <Option v-for="(item,value) in studentList" :key="value" :value="String(item.studentId)">{{item.studentName}}</Option>
           </Select>
         </FormItem>
-         <!-- <FormItem prop="studentName" label="学生姓名">
+        <!-- <FormItem prop="studentName" label="学生姓名">
           <Input style="width: 160px" placeholder="请输入学生姓名" :maxlength="10" v-model="query.studentName"></Input>
         </FormItem> -->
         <FormItem label="订单编号" prop="orderNumber" :label-width="80">
@@ -39,7 +39,8 @@
         <Form ref="form" :model="form" :rules="formRules" :label-width="110">
           <FormItem label="学生名称" prop="studentId">
             <Select filterable clearable style="width: 100%" v-model="form.studentId" placeholder="学生姓名">
-              <Option v-for="(label,value) in orderStudentType" :key="value" :value="value">{{label}}</Option>
+              <!-- <Option v-for="(label,value) in orderStudentType" :key="value" :value="value">{{label}}</Option> -->
+              <Option v-for="(item,value) in studentList" :key="value" :value="String(item.studentId)">{{item.studentName}}</Option>
             </Select>
           </FormItem>
           <FormItem label="课时数" prop="classCount">
@@ -302,6 +303,7 @@ export default {
   async created () {
     this.load(1)
     this.studentList = await this.getStudent()
+    console.log(this.studentList)
   },
   methods: {
     load (page) {
@@ -384,6 +386,7 @@ export default {
       })
     },
     modalOk () {
+      console.log(this.form)
       this.$refs.form.validate((valid) => {
         if (valid) {
           let data = { ...this.form }

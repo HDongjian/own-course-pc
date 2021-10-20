@@ -471,8 +471,9 @@ export default {
       let { startTime, endTime } = this.query
       startTime = this.SD(startTime)
       endTime = this.SD(endTime)
+      let time = this.$lib.myMoment().formate('YYYY年MM月DD日 HH:mm')
       if (watermark) {
-        this.printTime = this.$lib.myMoment().formate('YYYY年MM月DD日 HH:mm')
+        this.printTime = time
       }
       this.$nextTick(() => {
         html2canvas(this.$refs.calendar, opts).then((canvas) => {
@@ -483,7 +484,7 @@ export default {
           context.msImageSmoothingEnabled = false
           context.imageSmoothingEnabled = false
           var imgUri = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream') // 获取生成的图片的url
-          this.$lib.downloadFile(`${startTime}-${endTime}课表统计-${this.printTime}.png`, imgUri)
+          this.$lib.downloadFile(`${startTime}-${endTime}课表统计-${time}.png`, imgUri)
           this.printTime = ''
           shareContent.style.transform = 'scale(1)'
         })
