@@ -72,11 +72,11 @@
     </Modal>
     <Modal v-model="detailModal" :title="detailTitle" width="80%">
       <Card>
-        <div slot="title">订单记录</div>
-        <Table :loading="detailLoading" stripe :columns="orderListColumns" :data="orderList"></Table>
+        <div style="height:36px;line-height:36px" slot="title">订单记录 <Button class="fr" type="primary" @click="downLoadOrder()">导出订单记录</Button></div>
+        <order-table ref="orderTable" :data="orderList"></order-table>
       </Card>
       <Card style="margin-top:15px">
-        <div style="height:36px;line-height:36px" slot="title">课时记录 <Button class="fr" type="primary" @click="downLoadCourse()">导出</Button></div>
+        <div style="height:36px;line-height:36px" slot="title">课程进度 <Button class="fr" type="primary" @click="downLoadCourse()">导出课程进度</Button></div>
         <course-table ref="couseTable" :data="courseList"></course-table>
       </Card>
       <div slot="footer"></div>
@@ -277,93 +277,7 @@ export default {
       orderList: [],
       courseList: [],
       detailLoading: false,
-      orderListColumns: [
-        {
-          title: '序号',
-          type: 'index',
-          width: 80,
-          align: 'center'
-        },
-        {
-          title: '订单ID',
-          key: 'orderId',
-          align: 'center'
-        },
-        {
-          title: '订单课时数',
-          key: 'classCount',
-          align: 'center'
-        },
-        {
-          title: '剩余课时数',
-          align: 'center',
-          width: 120,
-          key: 'surplusCount'
-        },
-        {
-          title: '每节课分钟数',
-          align: 'center',
-          width: 120,
-          key: 'classMinute'
-        },
-        {
-          title: '订单金额',
-          key: 'orderAmount',
-          align: 'center',
-          render: (h, params) => {
-            return h('p', `${params.row.orderAmount || 0}元`)
-          }
-        },
-        {
-          title: '单价(元/小时)',
-          key: 'perHourPay',
-          align: 'center',
-          render: (h, params) => {
-            return h('p', `${parseInt(params.row.orderAmount / params.row.classCount)}`)
-          },
-          width: 150
-        },
-        {
-          title: '订单日期',
-          key: 'orderDate',
-          align: 'center',
-          width: '120',
-          render: (h, params) => {
-            return h('p', this.$lib.myMoment(new Date(params.row.orderDate)).formate('YYYY-MM-DD'))
-          }
-        },
-        {
-          title: '订单类型',
-          key: 'orderType',
-          align: 'center',
-          render: (h, params) => {
-            return h('p', this.orderType[params.row.orderType] || '--')
-          }
-        },
-        {
-          title: '订单号',
-          align: 'center',
-          render: (h, params) => {
-            return h('p', params.row.orderNumber || '--')
-          }
-        },
-        {
-          title: '备注',
-          key: 'description',
-          align: 'center',
-          width: 150,
-          tooltip: true
-        },
-        {
-          title: '创建时间',
-          key: 'createTime',
-          width: 170,
-          align: 'center',
-          render: (h, params) => {
-            return h('p', this.$lib.myMoment(new Date(params.row.updateTime)).formate())
-          }
-        }
-      ]
+      detailData: {}
     }
   },
   created () {
@@ -401,15 +315,21 @@ export default {
     },
     async detail (row) {
       this.orderList = []
+      this.detailData = row
       this.detailLoading = true
       this.detailModal = true
-      this.detailTitle = `${row.studentName}详情`
+      this.detailTitle = `${row.studentName}同学记录详情`
       this.orderList = await this.getAllOrderListByStd(row.studentId)
       let orderType = {}
       for (const order of this.orderList) {
         orderType[order.orderId] = this.orderType[order.orderType]
       }
       this.detailLoading = false
+      this.orderList = this.orderList.map(item => {
+        item.studentName = row.studentName
+        item.orderType = orderType[item.orderId]
+        return item
+      })
       this.$http.request({
         method: 'get',
         url: `/api/course/list?studentId=${row.studentId}`
@@ -427,8 +347,11 @@ export default {
         })
       })
     },
+    downLoadOrder () {
+      this.$refs.orderTable.downLoad(this.detailData.studentName)
+    },
     downLoadCourse () {
-      this.$refs.couseTable.downLoad(this.detailTitle)
+      this.$refs.couseTable.downLoad(this.detailData.studentName)
     },
     reset () {
       this.$refs.query.resetFields()

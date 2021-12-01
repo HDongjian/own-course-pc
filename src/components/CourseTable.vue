@@ -1,5 +1,10 @@
 <template>
-  <Table ref="STable" stripe :columns="columns" :data="dealData"></Table>
+  <div class="course_table">
+    <CheckboxGroup size="large" v-model="columnChecks">
+      <Checkbox v-for="(item,i) in checkColumns" :key="i" :label="item.key" border>{{item.title}}</Checkbox>
+    </CheckboxGroup>
+    <Table ref="STable" stripe :columns="dealColumns" :data="dealData"></Table>
+  </div>
 </template>
 
 <script>
@@ -9,11 +14,17 @@ export default {
   },
   data () {
     return {
+      columnChecks: [],
       columns: [
         {
           title: '序号',
           type: 'index',
           width: 80,
+          align: 'center'
+        },
+        {
+          title: '姓名',
+          key: 'studentName',
           align: 'center'
         },
         {
@@ -68,18 +79,36 @@ export default {
         item.duration = (new Date(item.endTime).getTime() - new Date(item.startTime).getTime()) / 60000 + '分钟'
         return item
       })
+    },
+    checkColumns () {
+      return this.columns.filter(item => {
+        return !!item.key
+      })
+    },
+    dealColumns () {
+      return this.columns.filter(item => {
+        return item.key ? this.columnChecks.includes(item.key) : true
+      })
     }
   },
+  created () {
+    this.setColumnChecks()
+  },
   methods: {
+    setColumnChecks () {
+      this.columnChecks = this.checkColumns.map(item => item.key)
+    },
     downLoad (name) {
-      this.$refs.STable.exportCsv({
-        filename: name
-      })
+      this.$lib.exportTable(this.$refs.STable.$el, `${name}课程记录`, `${this.$lib.myMoment().formate('YYYY年MM月DD日 HH时mm分ss秒')}`)
     }
   }
 }
 </script>
 
-<style>
-
+<style lang="less">
+.course_table{
+ .ivu-checkbox-group{
+   margin-bottom: 15px;
+ }
+}
 </style>

@@ -1,6 +1,7 @@
 import { validateTime } from './validate'
 import { download } from '@/config'
 import getLunarDay from './lunar'
+import XLSX from 'xlsx'
 
 let lib = {
   getLunarDay,
@@ -252,6 +253,19 @@ let lib = {
   },
   isExternal (path) {
     return /^(https?:|mailto:|tel:)/.test(path)
+  },
+  exportTable (el, fileName, sheetName) {
+    // var table1 = document.querySelector('#table1')
+    var sheet = XLSX.utils.table_to_sheet(el)// 将一个table对象转换成一个sheet对象
+    fileName = `${fileName}.xlsx`
+    let Sheets = {}; let SheetNames = []
+    Sheets[sheetName] = sheet
+    SheetNames.push(sheetName)
+    let workBook = {
+      SheetNames,
+      Sheets
+    }
+    XLSX.writeFile(workBook, fileName)
   }
 }
 

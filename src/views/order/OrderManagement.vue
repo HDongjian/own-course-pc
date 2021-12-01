@@ -76,9 +76,9 @@
         <Button type="primary" @click="modalOk()">确定</Button>
       </div>
     </Modal>
-    <Modal v-model="detailModal" title="课时记录" width="80%">
+    <Modal v-model="detailModal" :title="`${studentType[detailData.studentId]}同学订单号为${detailData.orderId}课程记录`" width="80%">
       <Card>
-        <div style="height:36px;line-height:36px" slot="title">课时记录 <Button class="fr" type="primary" @click="downLoadCourse()">导出</Button></div>
+        <div style="height:36px;line-height:36px" slot="title">课程记录 <Button class="fr" type="primary" @click="downLoadCourse()">导出课程记录</Button></div>
         <course-table ref="couseTable" :data="courseList"></course-table>
       </Card>
       <div slot="footer"></div>
@@ -290,7 +290,8 @@ export default {
         2: '结课'
       },
       detailModal: false,
-      courseList: []
+      courseList: [],
+      detailData: {}
     }
   },
   computed: {
@@ -301,11 +302,12 @@ export default {
     }
   },
   async created () {
-    this.load(1)
-    this.studentList = await this.getStudent()
-    console.log(this.studentList)
+    this.initCatch()
   },
   methods: {
+    nextTick () {
+      this.load(1)
+    },
     load (page) {
       this.query.pageNum = page
       let params = { ...this.query }
@@ -324,6 +326,7 @@ export default {
     },
     async detail (row) {
       this.detailModal = true
+      this.detailData = row
       this.$http.request({
         method: 'get',
         url: `/api/course/list?orderId=${row.orderId}`
@@ -340,6 +343,9 @@ export default {
           return item
         })
       })
+    },
+    downLoadCourse () {
+      this.$refs.couseTable.downLoad(`${this.studentType[this.detailData.studentId]}同学订单号为${this.detailData.orderId}的`)
     },
     change (page) {
       this.load(page)

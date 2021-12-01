@@ -73,7 +73,7 @@ export default {
           let hh = item.classMinute * item.classCount / 60
           item.haverHour = hh
           item.surplusCount = item.surplusHour * 60 / item.classMinute
-          item.disabled = item.surplusHour === 0
+          item.disabled = item.surplusHour <= 0
           return item
         })
       })

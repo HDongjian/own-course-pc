@@ -44,46 +44,49 @@
         </FormItem>
       </Form>
     </div>
-    <div class="position-title week-title">
-      <div :class="['weeks',{'weekend':i===0||i===6}]" v-for="(week,i) in weeks" :key="i">星期{{week}}</div>
-    </div>
-    <div class="form-content">
-      <div ref="calendar" @contextmenu.prevent='classContextMenu' class="calendar cl">
-        <div class="week-title">
-          <div :class="['weeks',{'weekend':i===0||i===6}]" v-for="(week,i) in weeks" :key="i">星期{{week}}</div>
-        </div>
-        <div ref="classes" class="classes-content cl">
-          <div :style="`height:${dayHeight+30}px`" :class="['class',{'weekend':i===1||i===7}]" v-for="i in suppleCount.start" :key="i+'start'"></div>
-          <!-- 星期 -->
-          <div :class="['class','has-date',{'weekend':GW(d.date)===0||GW(d.date)===6,'is-festival':$lib.getLunarDay(d.date).isFestival,'today': GT()===d.date}]" v-for="d in dealClasses" :key="d.date">
-            <!-- 展示日期 -->
-            <!-- <h4 v-if="GT()===d.date">今天</h4> -->
-            <!-- ({{weeks[GW(d.date)]}}) -->
-            <h4>{{d.date}}({{$lib.getLunarDay(d.date).result}})</h4>
-            <!-- 课程列表 -->
-            <div :style="`height:${dayHeight}px`" class="content">
-              <div :style="`height:${dayHeight/(d.classes.length||1)}px;line-height:${dayHeight/(d.classes.length||1)}px`" :row='JSON.stringify(c)' class="item" id="course" v-for="c in d.classes||[]" :key="c.id">
-                <div v-if="c.studentId">
-                  <span class="w-45">{{getSETime(c)}}</span>
-                  <span v-if="query.companyId&&Number(c.companyId) !== Number(query.companyId)" class="w-55">已排课</span>
-                  <span v-else class="w-55">
-                    <span class="w-60">{{studentType[c.studentId]}}</span>
-                    <span class="w-40">{{subjectType[c.subjectId]}}</span>
-                  </span>
-                  <my-icon v-if="c.isAudition==='1'" icon-class="is-audition"></my-icon>
+    <div class="calendar_box form-content">
+      <div class="position-title week-title">
+        <div :class="['weeks',{'weekend':i===0||i===6}]" v-for="(week,i) in weeks" :key="i">星期{{week}}</div>
+      </div>
+      <div>
+        <div ref="calendar" @contextmenu.prevent='classContextMenu' class="calendar cl">
+          <div class="week-title">
+            <div :class="['weeks',{'weekend':i===0||i===6}]" v-for="(week,i) in weeks" :key="i">星期{{week}}</div>
+          </div>
+          <div ref="classes" class="classes-content cl">
+            <div :style="`height:${dayHeight+30}px`" :class="['class',{'weekend':i===1||i===7}]" v-for="i in suppleCount.start" :key="i+'start'"></div>
+            <!-- 星期 -->
+            <div :class="['class','has-date',{'weekend':GW(d.date)===0||GW(d.date)===6,'is-festival':$lib.getLunarDay(d.date).isFestival,'today': GT()===d.date}]" v-for="d in dealClasses" :key="d.date">
+              <!-- 展示日期 -->
+              <!-- <h4 v-if="GT()===d.date">今天</h4> -->
+              <!-- ({{weeks[GW(d.date)]}}) -->
+              <h4>{{d.date}}({{$lib.getLunarDay(d.date).result}})</h4>
+              <!-- 课程列表 -->
+              <div :style="`height:${dayHeight}px`" class="content">
+                <div :style="`height:${dayHeight/(d.classes.length||1)}px;line-height:${dayHeight/(d.classes.length||1)}px`" :row='JSON.stringify(c)' class="item" id="course" v-for="c in d.classes||[]" :key="c.id">
+                  <div v-if="c.studentId">
+                    <span class="w-45">{{getSETime(c)}}</span>
+                    <span v-if="query.companyId&&Number(c.companyId) !== Number(query.companyId)" class="w-55">已排课</span>
+                    <span v-else class="w-55">
+                      <span class="w-60">{{studentType[c.studentId]}}</span>
+                      <span class="w-40">{{subjectType[c.subjectId]}}</span>
+                    </span>
+                    <my-icon v-if="c.isAudition==='1'" icon-class="is-audition"></my-icon>
+                  </div>
+                  <div class="idle-item" v-else>{{getSETime(c)}}</div>
                 </div>
-                <div class="idle-item" v-else>{{getSETime(c)}}</div>
               </div>
             </div>
-          </div>
-          <div :style="`height:${dayHeight+30}px`" :class="['class',{'weekend':i===6-suppleCount.end}]" v-for="i in 6-suppleCount.end" :key="i+'end'"></div>
-          <div v-if="printTime" class="time-watermark">
-            <p>{{printTime}}</p>
-            <p>￥{{printShow.money}}</p>
-            <p>小时数:{{printShow.count}}</p>
+            <div :style="`height:${dayHeight+30}px`" :class="['class',{'weekend':i===6-suppleCount.end}]" v-for="i in 6-suppleCount.end" :key="i+'end'"></div>
+            <div v-if="printTime" class="time-watermark">
+              <p>{{printTime}}</p>
+              <p>￥{{printShow.money}}</p>
+              <p>小时数:{{printShow.count}}</p>
+            </div>
           </div>
         </div>
       </div>
+      <Spin size="large" fix v-if="loading"></Spin>
     </div>
 
     <add-course :modalData="modal" :editData="editData" @close="addClose"></add-course>
@@ -122,6 +125,7 @@ export default {
       callback()
     }
     return {
+      loading: false,
       getCatch: true,
       dayHeight: 180,
       modal: false,
@@ -195,8 +199,12 @@ export default {
     }
   },
   created () {
+    this.loading = true
     this.initCatch()
     this.initData()
+    setTimeout(() => {
+      this.loading = false
+    }, 1500)
   },
   methods: {
     async initData () {
@@ -505,3 +513,10 @@ export default {
   }
 }
 </script>
+<style lang="less">
+.calendar-container {
+  .ivu-spin-fix {
+    z-index: 60;
+  }
+}
+</style>

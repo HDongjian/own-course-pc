@@ -58,6 +58,7 @@
   .ivu-layout-header {
     background-color: @primary-color;
     padding: 0 20px;
+
     .title {
       color: #fff;
       font-weight: 100;
@@ -239,13 +240,13 @@
     height: 200px;
     overflow: auto;
   }
-
   .form-content {
     // padding: 10px 0;
     box-sizing: border-box;
     height: ~"calc(100% - 70px)";
     overflow: auto;
-    &::-webkit-scrollbar{
+
+    &::-webkit-scrollbar {
       width: 0;
     }
   }
@@ -465,16 +466,19 @@
 
 .default {
   margin-top: -30px;
-  .tool{
+
+  .tool {
     padding-top: 15px;
     padding-left: 10px;
     border-radius: 4px;
     background-color: #fff;
     box-shadow: 0 0 10px 0 #E9E9E9;
-    .ivu-form-item{
+
+    .ivu-form-item {
       margin-bottom: 15px;
     }
   }
+
   .card {
     border: 1px solid #e8eaec;
     border-radius: 4px;
@@ -557,11 +561,13 @@
 
   .today-class {
     height: 250px;
+
     .header {
       background: #FAFAFA;
       border-radius: 4px 4px 0 0;
     }
-    .class-body{
+
+    .class-body {
       height: ~"calc(100% - 40px)";
       overflow: hidden;
     }
@@ -570,6 +576,7 @@
       height: 40px;
       line-height: 40px;
       border-bottom: 1px solid #EEEEEE;
+
       .w-45 {
         text-align: left;
       }
@@ -581,5 +588,39 @@
         text-align: center;
       }
     }
+  }
+}
+
+.order_course {
+
+  // border: 1px solid #dcdee2;
+  .order_part {
+    margin-bottom: 15px;
+    border: 1px solid #dcdee2;
+  }
+
+  .order_clomns {
+    display: flex;
+
+    >div {
+      font-size: 14px;
+      flex: 1;
+      text-align: center;
+
+      .header {
+        background-color: #f8f8f9;
+        font-weight: 700;
+      }
+
+      >div {
+        height: 40px;
+        line-height: 40px;
+      }
+    }
+  }
+
+  .course_part {
+    padding: 10px 20px;
+    box-sizing: border-box;
   }
 }
