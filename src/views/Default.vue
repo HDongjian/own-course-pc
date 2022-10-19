@@ -25,7 +25,7 @@
       </div>
       </Col>
     </Row>
-    <Row :gutter="16">
+    <Row :gutter="16" class="data_echart">
       <Col span="6">
       <div class="card">
         <h2>今日课程</h2>
@@ -50,17 +50,16 @@
       <Col span="18">
       <div class="card">
         <h2>每日课程数量</h2>
-        <div ref="courseLine" class="today-class"></div>
+        <div ref="courseLine" class="today-class echart-box"></div>
       </div>
       </Col>
       <Col span="24" style="margin-top:16px">
       <div class="card">
         <h2>订单数量</h2>
-        <div ref="orderBar" class="today-class"></div>
+        <div ref="orderBar" class="today-class echart-box"></div>
       </div>
       </Col>
     </Row>
-  </div>
   </div>
 </template>
 
@@ -134,7 +133,6 @@ export default {
         dateMaps[date]['count'] += Number(item.classCount * item.classMinute / 60)
         dateMaps[date]['amount'] = (dateMaps[date]['amount'] * 1000 + Number(item.orderAmount)) / 1000
       }
-      console.log(dateMaps)
       let myChart = echarts.init(this.$refs.orderBar); let legend = []; let series = []; let yAxis = []
       let keys = Object.keys(dateMaps).sort((x, y) => { return x - y })
       for (const key in map) {
@@ -187,7 +185,7 @@ export default {
           top: '12%',
           left: '2%',
           right: '2%',
-          bottom: '2%',
+          bottom: '10%',
           containLabel: true
         },
         xAxis: {
@@ -273,7 +271,7 @@ export default {
       }
       let option = {
         color: ['#74c3f9', '#00ddff'],
-        backgroundColor: '#fcfcfc',
+        backgroundColor: '#ffffff',
         title: {
           show: false
         },
@@ -284,13 +282,14 @@ export default {
           top: '12%',
           left: '3%',
           right: '4%',
-          bottom: '3%',
+          bottom: '6%',
           containLabel: true
         },
         xAxis: {
           type: 'category',
           boundaryGap: false,
           data: xAxis,
+          nameLocation: 'end',
           axisLine: {
             lineStyle: {
               color: '#0a385c'
@@ -348,7 +347,7 @@ export default {
         }
       }
       var myChart = echarts.init(this.$refs.courseLine)
-      myChart.setOption(option)
+      myChart.setOption(option, true)
     }
   }
 }

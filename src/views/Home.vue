@@ -87,6 +87,7 @@ export default {
   created () {
     this.getMenus()
     setTimeout(() => {
+      console.log(this.$route.path)
       this.menuActiveName = this.$route.path
     }, 2000)
   },

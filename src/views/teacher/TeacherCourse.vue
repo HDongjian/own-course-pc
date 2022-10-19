@@ -45,9 +45,9 @@
       </Form>
     </div>
     <div class="calendar_box form-content">
-      <div class="position-title week-title">
+      <!-- <div class="position-title week-title">
         <div :class="['weeks',{'weekend':i===0||i===6}]" v-for="(week,i) in weeks" :key="i">星期{{week}}</div>
-      </div>
+      </div> -->
       <div>
         <div ref="calendar" @contextmenu.prevent='classContextMenu' class="calendar cl">
           <div class="week-title">
@@ -55,23 +55,14 @@
           </div>
           <div ref="classes" class="classes-content cl">
             <div :style="`height:${dayHeight+30}px`" :class="['class',{'weekend':i===1||i===7}]" v-for="i in suppleCount.start" :key="i+'start'"></div>
-            <!-- 星期 -->
             <div :class="['class','has-date',{'weekend':GW(d.date)===0||GW(d.date)===6,'is-festival':$lib.getLunarDay(d.date).isFestival,'today': GT()===d.date}]" v-for="d in dealClasses" :key="d.date">
-              <!-- 展示日期 -->
-              <!-- <h4 v-if="GT()===d.date">今天</h4> -->
-              <!-- ({{weeks[GW(d.date)]}}) -->
               <h4>{{d.date}}({{$lib.getLunarDay(d.date).result}})</h4>
-              <!-- 课程列表 -->
               <div :style="`height:${dayHeight}px`" class="content">
                 <div :style="`height:${dayHeight/(d.classes.length||1)}px;line-height:${dayHeight/(d.classes.length||1)}px`" :row='JSON.stringify(c)' class="item" id="course" v-for="c in d.classes||[]" :key="c.id">
-                  <div v-if="c.studentId">
-                    <span class="w-45">{{getSETime(c)}}</span>
-                    <span v-if="query.companyId&&Number(c.companyId) !== Number(query.companyId)" class="w-55">已排课</span>
-                    <span v-else class="w-55">
-                      <span class="w-60">{{studentType[c.studentId]}}</span>
-                      <span class="w-40">{{subjectType[c.subjectId]}}</span>
-                    </span>
-                    <my-icon v-if="c.isAudition==='1'" icon-class="is-audition"></my-icon>
+                  <div v-if="c.studentId" class="item_date_data">
+                    <span class="w-1">{{getSETime(c)}}</span>
+                    <span class="w-2">{{studentType[c.studentId]}}</span>
+                    <span class="w-3">{{subjectType[c.subjectId]}}</span>
                   </div>
                   <div class="idle-item" v-else>{{getSETime(c)}}</div>
                 </div>
@@ -127,7 +118,7 @@ export default {
     return {
       loading: false,
       getCatch: true,
-      dayHeight: 180,
+      dayHeight: 120,
       modal: false,
       editData: {},
       query: {
@@ -459,20 +450,20 @@ export default {
     },
     downImage (watermark) {
       var shareContent = this.$refs.calendar
-      shareContent.style.transform = 'scale(0.5)'
+      // shareContent.style.transform = 'scale(1)'
       var width = shareContent.offsetWidth
       var height = shareContent.offsetHeight
       var canvas = document.createElement('canvas')
-      var scale = 2
-
+      var scale = 1
+      console.log(width, height)
       canvas.width = width * scale
       canvas.height = height * scale
       canvas.getContext('2d').scale(scale, scale)
 
       var opts = {
-        scale: scale,
+        // scale: scale,
         canvas: canvas,
-        logging: true,
+        // logging: true,
         width: width,
         height: height
       }
@@ -492,9 +483,10 @@ export default {
           context.msImageSmoothingEnabled = false
           context.imageSmoothingEnabled = false
           var imgUri = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream') // 获取生成的图片的url
+          console.log(imgUri)
           this.$lib.downloadFile(`${startTime}-${endTime}课表统计-${time}.png`, imgUri)
           this.printTime = ''
-          shareContent.style.transform = 'scale(1)'
+          // shareContent.style.transform = 'scale(1)'
         })
       })
     },

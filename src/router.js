@@ -11,6 +11,11 @@ let router = new Router({
       component: () => import('./views/Login.vue')
     },
     {
+      path: '/course',
+      name: 'Course',
+      component: () => import('./views/Course.vue')
+    },
+    {
       path: '/',
       component: Home,
       children: [

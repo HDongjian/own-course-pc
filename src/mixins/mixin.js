@@ -150,6 +150,9 @@ export default {
     getSETime (row) {
       return this.$lib.myMoment(row.startTime).formate('HH:mm') + '-' + this.$lib.myMoment(row.endTime).formate('HH:mm')
     },
+    getSTime (row) {
+      return this.$lib.myMoment(row.startTime).formate('HH:mm')
+    },
     GW (d) {
       return new Date(d).getDay()
     },
