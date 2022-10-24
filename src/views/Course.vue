@@ -2,7 +2,7 @@
  * @Author: HaoDongjian
  * @Date: 2022-10-19 11:49:21
  * @LastEditors: HaoDongjian
- * @LastEditTime: 2022-10-19 14:23:03
+ * @LastEditTime: 2022-10-24 15:41:19
  * @Description:
 -->
 <template>
@@ -16,7 +16,11 @@
           <div ref="classes" class="classes-content cl">
             <div :style="`height:${lineCount}`" :class="['class',{'weekend':i===1||i===7}]" v-for="i in suppleCount.start" :key="i+'start'"></div>
             <div :style="`height:${lineCount}`" :class="['class','has-date',{'weekend':GW(d.date)===0||GW(d.date)===6,'is-festival':$lib.getLunarDay(d.date).isFestival,'today': GT()===d.date}]" v-for="d in dealClasses" :key="d.date">
-              <h4>{{d.date}}<span class="title_yin">({{$lib.getLunarDay(d.date).result}})</span></h4>
+              <h4>
+                <span class="full_title">{{d.date}}</span>
+                <span class="part_title">{{$lib.myMoment(d.date).formate('MM-DD')}}</span>
+                <!-- <span class="title_yin">({{$lib.getLunarDay(d.date).result}})</span> -->
+              </h4>
               <div class="content">
                 <div :style="`height:${100/(d.classes.length||1)}%`" :row='JSON.stringify(c)' class="item" id="course" v-for="c in d.classes||[]" :key="c.id">
                   <div v-if="c.studentId" class="item_date_data">
@@ -269,6 +273,16 @@ export default {
         height: ~"calc(100% - 30px)";
         .item_date_data{
           height: 100%;
+          display: flex;
+          span{
+            flex: 1;
+            align-items: center;
+            display: flex;
+            justify-content: center;
+          }
+          .w-1{
+            flex: 2;
+          }
         }
       }
     }
@@ -277,7 +291,46 @@ export default {
 .only_course.calendar-container .calendar .classes-content .has-date .content .item .item_date_data .w-4{
   display: none;
 }
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 1200px) {
+  .only_course.calendar-container
+    .calendar
+    .classes-content
+    .has-date{
+      h4{
+        .title_yin{
+          display: none;
+        }
+      }
+      .content
+      .item
+      .item_date_data{
+        letter-spacing: -2px;
+      }
+    }
+}
+@media screen and (max-width: 1100px) {
+  .only_course.calendar-container
+    .calendar
+    .classes-content
+    .has-date{
+      h4{
+        .title_yin{
+          display: none;
+        }
+      }
+      .content
+      .item
+      .item_date_data{
+
+        .w-3 {
+          display: none;
+        }
+
+      }
+    }
+}
+
+@media screen and (max-width: 900px) {
   .only_course.calendar-container
     .calendar
     .classes-content
@@ -298,6 +351,30 @@ export default {
         }
       }
     }
+}
+
+@media screen and (max-width: 650px) {
+  .only_course.calendar-container .calendar .classes-content .has-date h4{
+    font-size: 13px;
+  }
+  .only_course.calendar-container .calendar .classes-content .has-date .content .item .item_date_data span{
+    font-size: 12px;
+  }
+}
+@media screen and (max-width: 560px) {
+  .only_course.calendar-container .calendar .classes-content .has-date h4{
+    .full_title {
+      display: none;
+    }
+    .part_title {
+      display: inline;
+    }
+  }
+}
+@media screen and (max-width: 530px) {
+  .only_course.calendar-container .calendar .classes-content .has-date .content .item .item_date_data .w-4 {
+    display: none;
+  }
 }
 
 </style>

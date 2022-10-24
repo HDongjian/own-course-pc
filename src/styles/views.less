@@ -364,7 +364,9 @@
           text-align: center;
           border-bottom: @table-border;
           box-sizing: border-box;
-
+          .part_title {
+            display: none;
+          }
           &:hover {
             background-color: @table-td-hover-bg;
             color: @font-color;
@@ -381,12 +383,13 @@
             box-sizing: border-box;
             color: @font-color;
             .item_date_data {
-              display: flex;
+              text-align: center;
+              // display: flex;
+              // position: relative;
               span {
+                position: relative;
                 flex: 1;
-                align-items: center;
-                display: flex;
-                justify-content: center;
+                text-align: center;
               }
               .w-1 {
                 flex: 2;
@@ -413,7 +416,7 @@
               left: 50%;
               top: 50%;
               transform: translate(-50%, -50%);
-              opacity: 0.3;
+              opacity: 0.1;
             }
           }
 
@@ -435,6 +438,9 @@
       font-size: 100px;
       text-align: center;
       opacity: 0.3;
+      p {
+        font-size: 90px;
+      }
     }
   }
 
@@ -662,8 +668,7 @@
     .has-date
     .content
     .item
-    .item_date_data
-    .w-3 {
-    display: none;
+    .item_date_data {
+    letter-spacing: -1px;
   }
 }

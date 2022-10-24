@@ -13,7 +13,7 @@
     "clipboard": "^2.0.8",
     "core-js": "^2.6.5",
     "echarts": "^5.4.0",
-    "html2canvas": "^1.0.0-rc.3",
+    "html2canvas": "^1.0.0-rc.4",
     "iview": "^3.4.2",
     "js-md5": "^0.7.3",
     "vue": "^2.6.10",
