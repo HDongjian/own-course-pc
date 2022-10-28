@@ -2,13 +2,13 @@
  * @Author: HaoDongjian
  * @Date: 2022-10-19 11:49:21
  * @LastEditors: HaoDongjian
- * @LastEditTime: 2022-10-24 15:41:19
+ * @LastEditTime: 2022-10-28 15:29:27
  * @Description:
 -->
 <template>
   <div class="calendar-container only_course">
     <div class="calendar_box form-content">
-      <div>
+      <div class="calendar_box" style="position: relative;">
         <div ref="calendar" class="calendar cl">
           <div class="week-title">
             <div :class="['weeks',{'weekend':i===0||i===6}]" v-for="(week,i) in weeks" :key="i">星期{{week}}</div>
@@ -33,7 +33,7 @@
                 </div>
               </div>
             </div>
-            <div :style="`height:${lineCount}`" :class="['class',{'weekend':i===6-suppleCount.end}]" v-for="i in 6-suppleCount.end" :key="i+'end'"></div>
+            <div :style="`height:${lineCount}`" :class="['class',{'weekend':i===suppleCount.end}]" v-for="i in suppleCount.end" :key="i+'end'"></div>
             <div v-if="printTime" class="time-watermark">
               <p>{{printTime}}</p>
               <p>￥{{printShow.money}}</p>
@@ -41,6 +41,10 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="action_icon">
+        <Icon @click.native="changeMouth('forward')" type="ios-arrow-forward" />
+        <Icon @click.native="changeMouth('back')" type="ios-arrow-back" />
       </div>
       <Spin size="large" fix v-if="loading"></Spin>
     </div>
@@ -83,16 +87,25 @@ export default {
     }
   },
   created () {
-    this.loading = true
     this.initCatch()
     this.initSearch()
     this.load()
   },
   methods: {
-    getItemHeight (count) {
-
+    changeMouth (number) {
+      let date = ''
+      let current = this.$lib.myMoment(this.query.startTime).formate('YYYY-MM-DD')
+      if (number === 'forward') {
+        date = this.$lib.getNextMonth(current)
+      } else {
+        date = this.$lib.getPreMonth(current)
+      }
+      this.query.startTime = this.$lib.getDateMonthFirst(date + ' 00:00:00') + ' 00:00:00'
+      this.query.endTime = this.$lib.getDateMonthLast(date + ' 00:00:00') + ' 00:00:00'
+      this.load()
     },
     load () {
+      this.loading = true
       let params = { ...this.query }
       params.startTime = params.startTime ? this.SD(params.startTime) + ' 00:00:00' : ''
       params.endTime = params.endTime ? this.SD(params.endTime) + ' 23:59:59' : ''
@@ -104,7 +117,9 @@ export default {
       }).then((res) => {
         this.data = res.data.data
         this.dealAllClasses()
-        this.loading = false
+        setTimeout(() => {
+          this.loading = false
+        }, 1000)
       })
     },
     initSearch () {
@@ -235,8 +250,8 @@ export default {
       endTime = this.SD(endTime)
       let dates = this.$lib.getAllDates(startTime, endTime)
       if (dates.length === 0) return
-      this.suppleCount.start = new Date(dates[0]).getDay()
-      this.suppleCount.end = new Date(dates[dates.length - 1]).getDay()
+      this.suppleCount.start = new Date(startTime).getDay()
+      this.suppleCount.end = 6 - (new Date(endTime).getDay())
       this.classes = dates.map(item => {
         item = { date: item }
         return item
@@ -251,12 +266,28 @@ export default {
   height: 100%;
   width: 100%;
   box-sizing: border-box;
+  position: relative;
+  .action_icon{
+    .ivu-icon{
+      position: absolute;
+      font-size: 100px;
+      transform: translateY(-50%);
+      top: 50%;
+      opacity: 0.5;
+      &.ivu-icon-ios-arrow-back{
+        left: 20px;
+      }
+      &.ivu-icon-ios-arrow-forward{
+        right: 20px;
+      }
+    }
+  }
   .calendar_box {
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-around;
-    >div{
+    .calendar_box{
       box-sizing: border-box;
       display: flex;
       align-items: center;

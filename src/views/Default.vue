@@ -1,6 +1,6 @@
 <template>
   <div class="default">
-    <div class="tool">
+    <!-- <div class="tool">
       <Form ref="query" :model="query" inline :label-width="80">
         <FormItem label="日期" prop="startTime" :label-width="40">
           <DatePicker v-model="query.startTime" type="date" placeholder="开始时间" style="width: 160px"></DatePicker>
@@ -13,7 +13,7 @@
           <Button @click="reset()">重置</Button>
         </FormItem>
       </Form>
-    </div>
+    </div> -->
     <Row :gutter="16" class="total">
       <Col span="4" v-for="(value,label) in total" :key="label">
       <div class="total-item">
@@ -49,14 +49,18 @@
       </Col>
       <Col span="18">
       <div class="card">
-        <h2>每日课程数量</h2>
-        <div ref="courseLine" class="today-class echart-box"></div>
+        <h2>每月课程统计</h2>
+        <div ref="courseLine" class="today-class echart-box">
+          <Table style="height: 100%;" :columns="mouthDateColumn" :data="allMouthDatas"></Table>
+        </div>
       </div>
       </Col>
       <Col span="24" style="margin-top:16px">
       <div class="card">
         <h2>订单数量</h2>
-        <div ref="orderBar" class="today-class echart-box"></div>
+        <div style="height:400px" ref="orderBar" class="today-class echart-box">
+          <Table style="height: 100%;" :columns="orderColumn" :data="allOrder"></Table>
+        </div>
       </div>
       </Col>
     </Row>
@@ -64,7 +68,6 @@
 </template>
 
 <script>
-import * as echarts from 'echarts'
 export default {
   data () {
     return {
@@ -83,17 +86,69 @@ export default {
       },
       getCatch: false,
       total: {},
+      allMouthDatas: [],
       todayClass: [],
       query: {
         startTime: '',
         endTime: '',
         mouth: ''
       },
-      classes: {}
+      classes: {},
+      mouthDateColumn: [
+        { type: 'index', width: 100, align: 'center', title: '序号' },
+        { title: '月份', key: 'date', align: 'center' },
+        { title: '订单数', key: 'order', align: 'center' },
+        { title: '课时数', key: 'count', align: 'center' },
+        { title: '金额',
+          key: 'amount',
+          align: 'center',
+          render: (h, params) => {
+            return h('p', `${params.row.amount || 0}元`)
+          } }
+      ],
+      orderColumn: [
+        { type: 'index', width: 100, align: 'center', title: '序号' },
+        {
+          title: '学生姓名',
+          key: 'studentName',
+          align: 'center',
+          render: (h, params) => {
+            return h('p', this.studentType[params.row.studentId])
+          }
+        },
+        {
+          title: '订单数',
+          key: 'order',
+          align: 'center'
+        },
+        {
+          title: '订单课时数',
+          key: 'classCount',
+          align: 'center'
+        },
+        {
+          title: '订单金额',
+          key: 'orderAmount',
+          align: 'center',
+          render: (h, params) => {
+            return h('p', `${params.row.orderAmount || 0}元`)
+          }
+        },
+        {
+          title: '单价(元/小时)',
+          key: 'perHourPay',
+          align: 'center',
+          render: (h, params) => {
+            return h('p', `${parseInt(params.row.orderAmount / params.row.classCount)}`)
+          }
+        }
+      ],
+      allOrder: []
     }
   },
   created () {
     this.initSearch()
+    this.initCatch()
     this.init()
   },
   methods: {
@@ -106,9 +161,6 @@ export default {
       this.query.endTime = this.$lib.getDateMonthLast()
     },
     async init () {
-      let params = { ...this.query }
-      params.startTime = params.startTime ? this.$lib.myMoment(params.startTime).formate('YYYY-MM-DD') + ' 00:00:00' : ''
-      params.endTime = params.endTime ? this.$lib.myMoment(params.endTime).formate('YYYY-MM-DD') + ' 23:59:59' : ''
       this.studentList = await this.getStudent()
       await this.getSubjects()
       this.total = await this.simpleGet('/api/statistics/total')
@@ -117,13 +169,12 @@ export default {
         startTime: this.$lib.myMoment().formate('YYYY-MM-DD') + ' 00:00:00',
         endTime: this.$lib.myMoment().formate('YYYY-MM-DD') + ' 23:59:59'
       })
-      this.getCourse(params)
       this.getOrders()
     },
     async getOrders () {
       let data = await this.simpleGet('/api/order/list')
       let dateMaps = {}
-      let map = { order: '订单数', amount: '金额/千', count: '课时数/小时' }
+      this.allMouthDatas = []
       for (const item of data) {
         let date = this.$lib.myMoment(item.orderDate).formate('YYYY/MM')
         if (!Object.hasOwnProperty.call(dateMaps, date)) {
@@ -131,112 +182,35 @@ export default {
         }
         dateMaps[date]['order'] += 1
         dateMaps[date]['count'] += Number(item.classCount * item.classMinute / 60)
-        dateMaps[date]['amount'] = (dateMaps[date]['amount'] * 1000 + Number(item.orderAmount)) / 1000
+        dateMaps[date]['amount'] = dateMaps[date]['amount'] + Number(item.orderAmount)
       }
-      let myChart = echarts.init(this.$refs.orderBar); let legend = []; let series = []; let yAxis = []
       let keys = Object.keys(dateMaps).sort((x, y) => { return x - y })
-      for (const key in map) {
-        legend.push(map[key])
-        series.push({ name: map[key],
-          key,
-          type: 'bar',
-          barWidth: 12,
-          itemStyle: {
-            emphasis: {
-              barBorderRadius: 8
-            },
-            normal: {
-              barBorderRadius: 8
-            } },
-          data: []
+      for (const date of keys) {
+        this.allMouthDatas.push({
+          date,
+          ...dateMaps[date]
         })
       }
-      for (const key of keys) {
-        let maps = dateMaps[key]
-        for (const item of series) {
-          item.data.push(maps[item.key])
-        }
-        // yAxis.push(this.$lib.myMoment(key + '-01').formate('M月'))
-        yAxis.push(key)
-      }
-      let option = {
-        color: [ '#40a9ff', '#5AD8A6', '#f7c739' ],
-        title: {
-          show: false
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'shadow'
-          }
-        },
-        legend: {
-          icon: 'circle',
-          itemWidth: 8,
-          right: '2%',
-          top: '0%',
-          show: true,
-          data: legend,
-          textStyle: {
-            // color: '#FFFFFF'
-          }
-        },
-        grid: {
-          top: '12%',
-          left: '2%',
-          right: '2%',
-          bottom: '10%',
-          containLabel: true
-        },
-        xAxis: {
-          type: 'category',
-          data: yAxis
-          // axisLine: {
-          //   lineStyle: {
-          //     color: '#244658'
-          //   }
-          // },
-          // axisTick: {
-          //   show: false
-          // },
-          // axisLabel: {
-          //   color: '#B9ECFF'
-          // }
-        },
-        yAxis: {
-          // name: '总\n量',
-          nameLocation: 'end',
-          nameTextStyle: {
-            // color: '#B9ECFF',
-            // verticalAlign: 'bottom',
-            // padding: [0, 100, -40, -20]
-          },
-          splitNumber: 6,
-          type: 'value',
-          axisLine: {
-            show: false
-          }
-          // axisLabel: {
-          //   color: '#B9ECFF'
-          // },
-          // splitLine: {
-          //   lineStyle: {
-          //     color: ['#244658']
-          //   }
-          // }
-        },
-        series
-      }
-      myChart.setOption(option)
+      this.initTableByDate(data)
     },
-    getCourse (params) {
-      this.$http.request({
-        method: 'get',
-        url: `/api/course/list`,
-        params
-      }).then((res) => {
-        this.initTableByDate(res.data.data)
-      })
+    initTableByDate (data) {
+      this.allOrder = []
+      let dateMaps = {}
+      for (const item of data) {
+        if (!Object.hasOwnProperty.call(dateMaps, item.studentId)) {
+          dateMaps[item.studentId] = { 'order': 0, 'classCount': 0, 'orderAmount': 0 }
+        }
+        dateMaps[item.studentId]['order'] += 1
+        dateMaps[item.studentId]['classCount'] += Number(item.classCount)
+        dateMaps[item.studentId]['orderAmount'] += Number(item.orderAmount)
+      }
+      for (const key in dateMaps) {
+        this.allOrder.push({
+          studentId: key,
+          ...dateMaps[key]
+        })
+      }
+      console.log(this.allOrder)
     },
     simpleGet (url, params) {
       return this.$http.request({
@@ -246,109 +220,24 @@ export default {
       }).then((res) => {
         return res.data.data
       })
-    },
-    initTableByDate (data) {
-      let { startTime, endTime } = this.query
-      startTime = this.$lib.myMoment(startTime).formate('YYYY-MM-DD')
-      endTime = this.$lib.myMoment(endTime).formate('YYYY-MM-DD')
-      let dates = this.$lib.getAllDates(startTime, endTime)
-      let classes = {}
-      for (const c of data) {
-        let d = this.$lib.myMoment(c.startTime).formate('YYYY-MM-DD')
-        if (!Object.hasOwnProperty.call(classes, d)) {
-          classes[d] = 0
-        }
-        classes[d] += ((new Date(c.endTime).getTime() - new Date(c.startTime).getTime()) / 3600000)
-      }
-      let max = 0; let xAxis = []; let series = []
-      if (dates.length === 0) return
-      for (const d of dates) {
-        xAxis.push(this.$lib.myMoment(d).formate('DD/MM'))
-        let count = classes[d] || 0
-        if (max < count) { max = count }
-        series.push(count)
-        // this.classes[d] = { ...subjects }
-      }
-      let option = {
-        color: ['#74c3f9', '#00ddff'],
-        backgroundColor: '#ffffff',
-        title: {
-          show: false
-        },
-        legend: {
-          show: false
-        },
-        grid: {
-          top: '12%',
-          left: '3%',
-          right: '4%',
-          bottom: '6%',
-          containLabel: true
-        },
-        xAxis: {
-          type: 'category',
-          boundaryGap: false,
-          data: xAxis,
-          nameLocation: 'end',
-          axisLine: {
-            lineStyle: {
-              color: '#0a385c'
-            }
-          },
-          splitLine: {
-            show: false,
-            lineStyle: {
-              color: '#E3F1FF',
-              type: 'dashed'
-            }
-          },
-          axisLabel: {
-            show: true,
-            textStyle: {
-              color: '#666666'
-            }
-          }
-        },
-        yAxis: {
-          type: 'value',
-          name: '课时',
-          max: max + 2,
-          minInterval: 1,
-          axisLine: {
-            show: true,
-            lineStyle: {
-              color: '#0a385c'
-            }
-          },
-          nameTextStyle: {
-            color: '#666666'
-          },
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: '#efefef',
-              type: 'dashed'
-            }
-          },
-          axisLabel: {
-            show: true,
-            textStyle: {
-              color: '#666666'
-            }
-          }
-        },
-        series: {
-          data: series,
-          type: 'line',
-          smooth: true,
-          areaStyle: {
-            color: '#b4daf8'
-          }
-        }
-      }
-      var myChart = echarts.init(this.$refs.courseLine)
-      myChart.setOption(option, true)
     }
   }
 }
 </script>
+
+<style lang="less">
+.echart-box{
+  .ivu-table:before,
+  .ivu-table::after{
+    display: none;
+  }
+  .ivu-table-wrapper{
+    border:none;
+    .ivu-table-body{
+      height: ~"calc(100% - 50px)";
+      overflow-y: auto;
+      overflow-x:hidden ;
+    }
+  }
+}
+</style>

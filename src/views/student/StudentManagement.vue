@@ -176,7 +176,7 @@ export default {
         {
           title: '创建时间',
           key: 'createTime',
-          width: 170,
+          width: 200,
           align: 'center',
           render: (h, params) => {
             return h('p', this.$lib.myMoment(new Date(params.row.updateTime)).formate())
