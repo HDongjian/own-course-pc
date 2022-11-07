@@ -19,7 +19,7 @@ export default {
         {
           title: '序号',
           type: 'index',
-          width: 80,
+          width: 120,
           align: 'center'
         },
         {
@@ -40,13 +40,13 @@ export default {
         {
           title: '剩余课时数',
           align: 'center',
-          width: 120,
+          width: 180,
           key: 'surplusCount'
         },
         {
           title: '每节课分钟数',
           align: 'center',
-          width: 120,
+          width: 200,
           key: 'classMinute'
         },
         {
@@ -63,14 +63,12 @@ export default {
           align: 'center',
           render: (h, params) => {
             return h('p', `${parseInt(params.row.orderAmount / params.row.classCount)}`)
-          },
-          width: 150
+          }
         },
         {
           title: '订单日期',
           key: 'orderDate',
           align: 'center',
-          width: '120',
           render: (h, params) => {
             return h('p', this.$lib.myMoment(new Date(params.row.orderDate)).formate('YYYY-MM-DD'))
           }
@@ -91,13 +89,11 @@ export default {
           title: '备注',
           key: 'description',
           align: 'center',
-          width: 150,
           tooltip: true
         },
         {
           title: '创建时间',
           key: 'createTime',
-          width: 170,
           align: 'center',
           render: (h, params) => {
             return h('p', this.$lib.myMoment(new Date(params.row.updateTime)).formate())

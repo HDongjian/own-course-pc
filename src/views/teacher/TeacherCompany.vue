@@ -1,7 +1,7 @@
 <template>
   <div class="company-management">
     <div class="tool">
-      <Form ref="query" :model="query" inline :label-width="80">
+      <Form ref="query" :model="query" inline :label-width="120">
         <FormItem prop="user" label='机构名称'>
           <!--eslint-disable-next-line vue/no-parsing-error -->
           <Input type="text" v-model="query.companyName" placeholder="机构名称"></Input>
@@ -109,20 +109,18 @@ export default {
         {
           title: '序号',
           type: 'index',
-          width: 80,
+          width: 120,
           align: 'center'
         },
         {
           title: '机构名称',
           key: 'companyName',
-          align: 'center',
-          width: 120
+          align: 'center'
         },
         {
           title: '科目类型',
           key: 'companyType',
           align: 'center',
-          width: 180,
           render: (h, params) => {
             return h('p', this.getExams(params.row.companyType))
           }
@@ -131,7 +129,6 @@ export default {
           title: '录入订单',
           key: 'isOrder',
           align: 'center',
-          width: 100,
           render: (h, params) => {
             return h('p', params.row.isOrder === '1' ? '可以' : '不可以')
           }
@@ -140,31 +137,26 @@ export default {
           title: '机构地址',
           key: 'address',
           align: 'center',
-          tooltip: true,
-          width: 150
+          tooltip: true
         },
         {
           title: '联系人',
           key: 'contactName',
-          align: 'center',
-          width: 100
+          align: 'center'
         },
         {
           title: '联系电话',
           key: 'mobile',
-          align: 'center',
-          width: 150
+          align: 'center'
         },
         {
           title: '工资发放日期',
           key: 'payrollDate',
-          align: 'center',
-          width: 170
+          align: 'center'
         },
         {
           title: '课时费(每小时)',
           align: 'center',
-          width: 170,
           render: (h, params) => {
             return h('p', params.row.wageMin + '-' + params.row.wageMax)
           }
@@ -172,7 +164,6 @@ export default {
         {
           title: '机构类型',
           align: 'center',
-          width: 150,
           render: (h, params) => {
             return h('p', this.onlineMaps[params.row.onlineType])
           }
@@ -181,7 +172,6 @@ export default {
           title: '线上渠道',
           key: 'onlineChannel',
           align: 'center',
-          width: 120,
           tooltip: true,
           render: (h, params) => {
             return h('p', params.row.onlineChannel || '--')
@@ -191,7 +181,6 @@ export default {
           title: '线下地址',
           key: 'offlineAddress',
           align: 'center',
-          width: 120,
           tooltip: true,
           render: (h, params) => {
             return h('p', params.row.offlineAddress || '--')
@@ -201,13 +190,11 @@ export default {
           title: '备注',
           key: 'description',
           align: 'center',
-          width: 150,
           tooltip: true
         },
         {
           title: '创建时间',
           key: 'createTime',
-          width: 170,
           align: 'center',
           render: (h, params) => {
             return h('p', this.$lib.myMoment(new Date(params.row.createTime)).formate())
@@ -216,7 +203,6 @@ export default {
         {
           title: '操作',
           key: 'action',
-          width: 150,
           fixed: 'right',
           align: 'center',
           render: (h, params) => {

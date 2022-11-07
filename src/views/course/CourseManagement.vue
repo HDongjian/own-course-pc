@@ -1,7 +1,7 @@
 <template>
   <div class="course-management">
     <div class="tool">
-      <Form ref="query" :model="query" inline :label-width="80">
+      <Form ref="query" :model="query" inline :label-width="120">
         <FormItem prop="studentId" label='学生姓名'>
           <Select filterable clearable style="width: 160px" v-model="query.studentId" placeholder="学生姓名">
             <Option v-for="(item,value) in studentList" :key="value" :value="item.studentId">{{item.studentName}}</Option>
@@ -12,23 +12,23 @@
             <Option v-for="(label,value) in companyType" :key="value" :value="value">{{label}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="subjectId" label='科目' :label-width="40">
+        <FormItem prop="subjectId" label='科目' :label-width="80">
           <Select clearable style="width: 160px" v-model="query.subjectId" placeholder="科目">
             <Option v-for="(label,value) in subjectType" :key="value" :value="value">{{label}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="日期" prop="startTime" :label-width="40">
+        <FormItem label="日期" prop="startTime" :label-width="80">
           <DatePicker v-model="query.startTime" type="date" placeholder="开始时间" style="width: 160px"></DatePicker>
         </FormItem>
-        <FormItem label="—" class="date-line" prop="endTime" :label-width="20">
+        <FormItem label="—" class="date-line" prop="endTime" :label-width="40">
           <DatePicker v-model="query.endTime" type="date" placeholder="结束时间" style="width: 160px"></DatePicker>
         </FormItem>
-        <FormItem prop="companyId" label='是否试听'>
-          <Select clearable style="width: 100px" v-model="query.isAudition" placeholder="是否试听">
+        <!-- <FormItem prop="companyId" label='是否试听'>
+          <Select clearable style="width: 200px" v-model="query.isAudition" placeholder="是否试听">
             <Option value="1">是</Option>
             <Option value="0">否</Option>
           </Select>
-        </FormItem>
+        </FormItem> -->
         <FormItem :label-width="20">
           <Button type="primary" @click="load(1)">查询</Button>
           <Button @click="reset()">重置</Button>
@@ -37,7 +37,7 @@
         </FormItem>
       </Form>
     </div>
-    <Table :loading="loading" stripe height="520" :columns="columns" :data="data"></Table>
+    <Table :loading="loading" stripe :columns="columns" :data="data"></Table>
     <Page v-if="query.total>0" :total="query.total" show-total :page-size="query.pageSize" :current="query.pageNum" @on-change="change" />
     <add-course :modalData="modal" :editData="editData" @close="addClose"></add-course>
   </div>
@@ -66,8 +66,8 @@ export default {
       columns: [
         {
           title: '序号',
-          width: 80,
           align: 'center',
+          width: 120,
           render: (h, params) => {
             return h('p', (this.query.pageNum - 1) * 10 + params.index + 1)
           }
@@ -99,7 +99,6 @@ export default {
         {
           title: '时间',
           align: 'center',
-          width: 140,
           render: (h, params) => {
             return h('p', this.$lib.myMoment(params.row.startTime).formate('HH:mm') + '-' + this.$lib.myMoment(params.row.endTime).formate('HH:mm'))
           }
@@ -115,7 +114,6 @@ export default {
           title: '是否试听',
           key: 'isOrder',
           align: 'center',
-          width: 100,
           render: (h, params) => {
             return h('p', params.row.isAudition === '1' ? '是' : '否')
           }
@@ -137,7 +135,6 @@ export default {
         {
           title: '操作',
           key: 'action',
-          width: 150,
           align: 'center',
           render: (h, params) => {
             return h('div', [

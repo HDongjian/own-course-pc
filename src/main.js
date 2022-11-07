@@ -1,3 +1,10 @@
+/*
+ * @Author: HaoDongjian
+ * @Date: 2022-04-21 15:26:30
+ * @LastEditors: HaoDongjian
+ * @LastEditTime: 2022-11-07 11:36:40
+ * @Description:
+ */
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -23,6 +30,8 @@ Vue.use(scroll)
 Vue.config.productionTip = false
 Vue.mixin(mixin)
 Vue.use(icons)
+const dashboardFlexible = require('lib-flexible-for-dashboard')
+dashboardFlexible.init(16 / 9)
 
 let account = sessionStorage.getItem('account')
 if (account) {

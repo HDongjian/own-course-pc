@@ -2,7 +2,7 @@
  * @Author: HaoDongjian
  * @Date: 2022-10-19 11:49:21
  * @LastEditors: HaoDongjian
- * @LastEditTime: 2022-10-28 15:29:27
+ * @LastEditTime: 2022-11-07 15:10:18
  * @Description:
 -->
 <template>
@@ -335,7 +335,7 @@ export default {
       .content
       .item
       .item_date_data{
-        letter-spacing: -2px;
+        letter-spacing: 0px;
       }
     }
 }

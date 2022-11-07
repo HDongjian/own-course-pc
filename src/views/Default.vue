@@ -51,7 +51,7 @@
       <div class="card">
         <h2>每月课程统计</h2>
         <div ref="courseLine" class="today-class echart-box">
-          <Table style="height: 100%;" :columns="mouthDateColumn" :data="allMouthDatas"></Table>
+          <Table :loading="courseLoading" style="height: 100%;" :columns="mouthDateColumn" :data="allMouthDatas"></Table>
         </div>
       </div>
       </Col>
@@ -59,7 +59,7 @@
       <div class="card">
         <h2>订单数量</h2>
         <div style="height:400px" ref="orderBar" class="today-class echart-box">
-          <Table style="height: 100%;" :columns="orderColumn" :data="allOrder"></Table>
+          <Table :loading="orderLoading"  style="height: 100%;" :columns="orderColumn" :data="allOrder"></Table>
         </div>
       </div>
       </Col>
@@ -143,10 +143,14 @@ export default {
           }
         }
       ],
-      allOrder: []
+      allOrder: [],
+      courseLoading: false,
+      orderLoading: false
     }
   },
   created () {
+    this.courseLoading = true
+    this.orderLoading = true
     this.initSearch()
     this.initCatch()
     this.init()
@@ -192,6 +196,7 @@ export default {
         })
       }
       this.initTableByDate(data)
+      this.courseLoading = false
     },
     initTableByDate (data) {
       this.allOrder = []
@@ -210,7 +215,7 @@ export default {
           ...dateMaps[key]
         })
       }
-      console.log(this.allOrder)
+      this.orderLoading = false
     },
     simpleGet (url, params) {
       return this.$http.request({

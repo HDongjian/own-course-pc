@@ -1,27 +1,27 @@
 <template>
   <div class="order-management">
     <div class="tool">
-      <Form ref="query" :model="query" inline :label-width="80">
+      <Form ref="query" :model="query" inline :label-width="120">
         <FormItem prop="studentId" label='学生姓名'>
-          <Select filterable clearable style="width: 160px" v-model="query.studentId" placeholder="学生姓名">
+          <Select filterable clearable style="width: 170px" v-model="query.studentId" placeholder="学生姓名">
             <!-- <Option v-for="(label,value) in studentType" :key="value" :value="value">{{label}}</Option> -->
             <Option v-for="(item,value) in studentList" :key="value" :value="String(item.studentId)">{{item.studentName}}</Option>
           </Select>
         </FormItem>
         <!-- <FormItem prop="studentName" label="学生姓名">
-          <Input style="width: 160px" placeholder="请输入学生姓名" :maxlength="10" v-model="query.studentName"></Input>
+          <Input style="width: 170px" placeholder="请输入学生姓名" :maxlength="10" v-model="query.studentName"></Input>
         </FormItem> -->
-        <FormItem label="订单编号" prop="orderNumber" :label-width="80">
-          <Input v-model="query.orderNumber" placeholder="订单编号" style="width: 160px" />
+        <FormItem label="订单编号" prop="orderNumber" :label-width="120">
+          <Input v-model="query.orderNumber" placeholder="订单编号" style="width: 170px" />
         </FormItem>
-        <FormItem label="订单日期" prop="orderStartDate" :label-width="80">
-          <DatePicker v-model="query.orderStartDate" type="date" placeholder="开始时间" style="width: 160px"></DatePicker>
+        <FormItem label="订单日期" prop="orderStartDate" :label-width="120">
+          <DatePicker v-model="query.orderStartDate" type="date" placeholder="开始时间" style="width: 170px"></DatePicker>
         </FormItem>
-        <FormItem label="—" class="date-line" prop="orderEndDate" :label-width="20">
-          <DatePicker v-model="query.orderEndDate" type="date" placeholder="结束时间" style="width: 160px"></DatePicker>
+        <FormItem label="—" class="date-line" prop="orderEndDate" :label-width="40">
+          <DatePicker v-model="query.orderEndDate" type="date" placeholder="结束时间" style="width: 170px"></DatePicker>
         </FormItem>
         <FormItem prop="orderType" label='订单类型'>
-          <Select clearable style="width: 160px" v-model="query.orderType" placeholder="订单类型">
+          <Select clearable style="width: 170px" v-model="query.orderType" placeholder="订单类型">
             <Option v-for="(label,value) in orderType" :key="value" :value="value">{{label}}</Option>
           </Select>
         </FormItem>
@@ -32,7 +32,7 @@
         </FormItem>
       </Form>
     </div>
-    <Table :loading="loading" stripe height="520" :columns="columns" :data="data"></Table>
+    <Table :loading="loading" stripe :columns="columns" :data="data"></Table>
     <Page v-if="query.total>0" :total="query.total" show-total :page-size="query.pageSize" :current="query.pageNum" @on-change="change" />
     <Modal v-model="modal" :title="modalTitle" @on-cancel="modalCancel">
       <div class="modal-content">
@@ -116,7 +116,7 @@ export default {
       columns: [
         {
           title: '序号',
-          width: 80,
+          width: 120,
           align: 'center',
           render: (h, params) => {
             return h('p', (this.query.pageNum - 1) * 10 + params.index + 1)
@@ -129,7 +129,6 @@ export default {
         }, {
           title: '学生姓名',
           key: 'studentName',
-          width: 100,
           align: 'center',
           render: (h, params) => {
             return h('p', this.studentType[params.row.studentId])
@@ -142,7 +141,7 @@ export default {
         },
         {
           title: '每节课分钟数',
-          width: 120,
+          width: 200,
           align: 'center',
           key: 'classMinute'
         },
@@ -160,8 +159,7 @@ export default {
           align: 'center',
           render: (h, params) => {
             return h('p', `${parseInt(params.row.orderAmount / params.row.classCount)}`)
-          },
-          width: 150
+          }
         },
         {
           title: '订单日期',
@@ -190,13 +188,11 @@ export default {
           title: '备注',
           key: 'description',
           align: 'center',
-          width: 150,
           tooltip: true
         },
         {
           title: '创建时间',
           key: 'createTime',
-          width: 200,
           align: 'center',
           render: (h, params) => {
             return h('p', this.$lib.myMoment(new Date(params.row.updateTime)).formate())
@@ -205,7 +201,6 @@ export default {
         {
           title: '操作',
           key: 'action',
-          width: 180,
           align: 'center',
           render: (h, params) => {
             return h('div', [

@@ -157,3 +157,11 @@ export default {
   }
 }
 </script>
+<style lang="less">
+.ivu-layout-sider{
+  width: 200px!important;
+  min-width: 200px!important;
+  max-width: 200px!important;
+  flex: 0 0 200px!important;
+}
+</style>

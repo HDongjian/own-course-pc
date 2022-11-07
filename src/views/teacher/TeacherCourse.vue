@@ -2,20 +2,20 @@
   <div class="default-container calendar-container">
     <div class="tool">
       <Form style="display:inline" ref="query" :model="query" inline :label-width="80">
-        <FormItem label="空余时间" prop="idle">
+        <FormItem label="空余时间" prop="idle" :label-width="120">
           <i-switch v-model="query.idle"></i-switch>
         </FormItem>
-        <FormItem v-show="!query.idle" prop="studentId" label='学生姓名'>
+        <FormItem v-show="!query.idle" prop="studentId" label='学生姓名' :label-width="120">
           <Select filterable clearable style="width: 160px" v-model="query.studentId" placeholder="学生姓名">
             <Option v-for="(item,value) in studentList" :key="value" :value="item.studentId">{{item.studentName}}</Option>
           </Select>
         </FormItem>
-        <FormItem v-show="!query.idle" prop="companyId" label='机构' :label-width="40">
+        <FormItem v-show="!query.idle" prop="companyId" label='机构' :label-width="80">
           <Select clearable style="width: 160px" v-model="query.companyId" placeholder="机构">
             <Option v-for="(label,value) in companyType" :key="value" :value="value">{{label}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="月份" prop="mouth" :label-width="40">
+        <FormItem label="月份" prop="mouth" :label-width="80">
           <DatePicker @on-change="mouthChange" :editable="false" type="month" placeholder="选择月份" v-model="query.mouth" style="width: 160px"></DatePicker>
         </FormItem>
         <!-- <FormItem label="日期" prop="startTime" :label-width="40">
@@ -54,11 +54,11 @@
             <div :class="['weeks',{'weekend':i===0||i===6}]" v-for="(week,i) in weeks" :key="i">星期{{week}}</div>
           </div>
           <div ref="classes" class="classes-content cl">
-            <div :style="`height:${dayHeight+30}px`" :class="['class',{'weekend':i===1||i===7}]" v-for="i in suppleCount.start" :key="i+'start'"></div>
-            <div :class="['class','has-date',{'weekend':GW(d.date)===0||GW(d.date)===6,'is-festival':$lib.getLunarDay(d.date).isFestival,'today': GT()===d.date}]" v-for="d in dealClasses" :key="d.date">
+            <div :style="`height:${lineCount}`" :class="['class',{'weekend':i===1||i===7}]" v-for="i in suppleCount.start" :key="i+'start'"></div>
+            <div :style="`height:${lineCount}`" :class="['class','has-date',{'weekend':GW(d.date)===0||GW(d.date)===6,'is-festival':$lib.getLunarDay(d.date).isFestival,'today': GT()===d.date}]" v-for="d in dealClasses" :key="d.date">
               <h4>{{d.date}}({{$lib.getLunarDay(d.date).result}})</h4>
-              <div :style="`height:${dayHeight}px`" class="content">
-                <div :style="`height:${dayHeight/(d.classes.length||1)}px;line-height:${dayHeight/(d.classes.length||1)}px`" :row='JSON.stringify(c)' class="item" id="course" v-for="c in d.classes||[]" :key="c.id">
+              <div class="content">
+                <div :style="`height:${100/(d.classes.length||1)}%;`" :row='JSON.stringify(c)' class="item" id="course" v-for="c in d.classes||[]" :key="c.id">
                   <div v-if="c.studentId" class="item_date_data">
                     {{getSETime(c)}} - {{studentType[c.studentId]}} - {{subjectType[c.subjectId]}}
                     <!-- <span class="w-1">{{getSETime(c)}} - 的各个过过</span> -->
@@ -70,7 +70,7 @@
                 </div>
               </div>
             </div>
-            <div :style="`height:${dayHeight+30}px`" :class="['class',{'weekend':i===6-suppleCount.end}]" v-for="i in 6-suppleCount.end" :key="i+'end'"></div>
+            <div :style="`height:${lineCount}`" :class="['class',{'weekend':i===6-suppleCount.end}]" v-for="i in 6-suppleCount.end" :key="i+'end'"></div>
             <div v-if="printTime" class="time-watermark">
               <p>{{printTime}}</p>
               <p>￥{{printShow.money}}</p>
@@ -103,8 +103,9 @@
 </template>
 
 <script>
-import html2canvas from 'html2canvas'
 import { validateWage, validateTime } from '../../utils/validate'
+import * as domtoimage from 'dom-to-image'
+console.log(domtoimage)
 export default {
 
   data () {
@@ -172,6 +173,12 @@ export default {
     }
   },
   computed: {
+    lineCount () {
+      let { start, end } = this.suppleCount
+      let total = (this.dealClasses.length + Number(start || 0) + Number(end || 0)) / 7
+      total = Math.ceil(total)
+      return `calc(${100 / total}%)`
+    },
     printShow () {
       let printShow = {
         money: 0,
@@ -451,24 +458,6 @@ export default {
       this.editData = row
     },
     downImage (watermark) {
-      var shareContent = this.$refs.calendar
-      // shareContent.style.transform = 'scale(1)'
-      var width = shareContent.offsetWidth
-      var height = shareContent.offsetHeight
-      var canvas = document.createElement('canvas')
-      var scale = 1
-      console.log(width, height)
-      canvas.width = width * scale
-      canvas.height = height * scale
-      canvas.getContext('2d').scale(scale, scale)
-
-      var opts = {
-        // scale: scale,
-        canvas: canvas,
-        // logging: true,
-        width: width * 1.25,
-        height: height * 1.25
-      }
       let { startTime, endTime } = this.query
       startTime = this.SD(startTime)
       endTime = this.SD(endTime)
@@ -476,15 +465,15 @@ export default {
       if (watermark) {
         this.printTime = time
       }
-      this.$nextTick(() => {
-        html2canvas(this.$refs.calendar, opts).then((canvas) => {
-          var imgUri = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream') // 获取生成的图片的url
-          console.log(imgUri)
-          this.$lib.downloadFile(`${startTime}-${endTime}课表统计-${time}.png`, imgUri)
+      setTimeout(() => {
+        let node = this.$refs.calendar
+        domtoimage.toPng(node, {}).then((blob) => {
+          console.log(blob)
+          // this.$lib.downBlobFile(`${startTime}-${endTime}课表统计-${time}.png`, blob)
+          this.$lib.downloadFile(`${startTime}-${endTime}课表统计-${time}.png`, blob)
           this.printTime = ''
-          // shareContent.style.transform = 'scale(1)'
         })
-      })
+      }, 500)
     },
     delect (data) {
       this.$http.request({

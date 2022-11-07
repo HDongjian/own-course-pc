@@ -243,7 +243,12 @@
     box-sizing: border-box;
     height: ~"calc(100% - 70px)";
     overflow: auto;
-
+    > div {
+      height: 100%;
+      .calendar {
+        height: 100%;
+      }
+    }
     &::-webkit-scrollbar {
       width: 0;
     }
@@ -323,9 +328,11 @@
     border-bottom: none;
     border-left: none;
     position: relative;
+    background-color: #fff;
     // min-width: 1650px;
 
     .classes-content {
+      height: ~"calc(100% - 43px)";
       .class {
         box-sizing: border-box;
         float: left;
@@ -375,17 +382,21 @@
 
         .content {
           box-sizing: border-box;
-
+          height: ~"calc(100% - 30px)";
           .item {
             border-bottom: @table-border;
             border-bottom-style: dashed;
             font-size: @content-size;
             box-sizing: border-box;
             color: @font-color;
+            position: relative;
             .item_date_data {
               text-align: center;
-              // display: flex;
-              // position: relative;
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              white-space: nowrap;
               span {
                 position: relative;
                 flex: 1;
@@ -416,7 +427,7 @@
               left: 50%;
               top: 50%;
               transform: translate(-50%, -50%);
-              opacity: 0.1;
+              opacity: 0.3;
             }
           }
 
@@ -671,4 +682,8 @@
     .item_date_data {
     letter-spacing: -1px;
   }
+}
+
+.date-line .ivu-form-item-label {
+  text-align: center;
 }

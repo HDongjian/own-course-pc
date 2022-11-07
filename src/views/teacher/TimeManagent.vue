@@ -105,7 +105,7 @@ export default {
         {
           title: '序号',
           type: 'index',
-          width: 80,
+          width: 120,
           align: 'center'
         }, {
           title: '时间主题',
@@ -145,7 +145,6 @@ export default {
         {
           title: '操作',
           key: 'action',
-          width: 150,
           align: 'center',
           render: (h, params) => {
             return h('div', [

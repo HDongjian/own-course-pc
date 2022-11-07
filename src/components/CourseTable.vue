@@ -19,7 +19,7 @@ export default {
         {
           title: '序号',
           type: 'index',
-          width: 80,
+          width: 120,
           align: 'center'
         },
         {
@@ -50,8 +50,7 @@ export default {
         {
           title: '时间',
           align: 'center',
-          key: 'time',
-          width: 140
+          key: 'time'
         },
         {
           title: '科目',

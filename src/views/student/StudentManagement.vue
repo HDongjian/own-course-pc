@@ -1,7 +1,7 @@
 <template>
   <div class="student-management">
     <div class="tool">
-      <Form ref="query" :model="query" inline :label-width="80">
+      <Form ref="query" :model="query" inline :label-width="120">
         <!-- <FormItem prop="studentId" label='学生姓名'>
           <Select filterable clearable style="width: 160px" v-model="query.studentId" placeholder="学生姓名">
             <Option v-for="(label,value) in studentType" :key="value" :value="value">{{label}}</Option>
@@ -28,7 +28,7 @@
         </FormItem>
       </Form>
     </div>
-    <Table :loading="loading" stripe height="520" :columns="columns" :data="data"></Table>
+    <Table :loading="loading" stripe :columns="columns" :data="data"></Table>
     <Page v-if="query.total>0" :total="query.total" show-total :page-size="query.pageSize" :current="query.pageNum" @on-change="change" />
     <Modal v-model="modal" :title="modalTitle" @on-cancel="modalCancel">
       <div class="modal-content">
@@ -103,7 +103,7 @@ export default {
       columns: [
         {
           title: '序号',
-          width: 80,
+          width: 120,
           align: 'center',
           render: (h, params) => {
             return h('p', (this.query.pageNum - 1) * 10 + params.index + 1)
@@ -111,8 +111,7 @@ export default {
         }, {
           title: '学生姓名',
           key: 'studentName',
-          align: 'center',
-          width: 100
+          align: 'center'
         },
         {
           title: '所在机构',
@@ -133,14 +132,12 @@ export default {
         {
           title: '课时费(元/小时)',
           key: 'perHourPay',
-          align: 'center',
-          width: 150
+          align: 'center'
         },
         {
           title: '剩余课时数',
           key: 'surplusHour',
-          align: 'center',
-          width: 120
+          align: 'center'
         },
         {
           title: '当前分数',
@@ -170,13 +167,11 @@ export default {
           title: '备注',
           key: 'description',
           align: 'center',
-          width: 250,
           tooltip: true
         },
         {
           title: '创建时间',
           key: 'createTime',
-          width: 200,
           align: 'center',
           render: (h, params) => {
             return h('p', this.$lib.myMoment(new Date(params.row.updateTime)).formate())
@@ -185,7 +180,6 @@ export default {
         {
           title: '操作',
           key: 'action',
-          width: 180,
           align: 'center',
           render: (h, params) => {
             return h('div', [
