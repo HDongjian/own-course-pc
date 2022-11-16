@@ -281,7 +281,6 @@ export default {
       })
     },
     modalOk () {
-      console.log(this.form.avatar)
       this.$refs.form.validate((valid) => {
         if (valid) {
           let url = this.modifyId ? `/api/user/update/${this.modifyId}` : `/api/user/add`

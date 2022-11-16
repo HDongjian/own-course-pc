@@ -169,14 +169,14 @@ export default {
           align: 'center',
           tooltip: true
         },
-        {
-          title: '创建时间',
-          key: 'createTime',
-          align: 'center',
-          render: (h, params) => {
-            return h('p', this.$lib.myMoment(new Date(params.row.updateTime)).formate())
-          }
-        },
+        // {
+        //   title: '创建时间',
+        //   key: 'createTime',
+        //   align: 'center',
+        //   render: (h, params) => {
+        //     return h('p', this.$lib.myMoment(new Date(params.row.updateTime)).formate())
+        //   }
+        // },
         {
           title: '操作',
           key: 'action',
@@ -284,7 +284,7 @@ export default {
     load (page) {
       this.query.pageNum = page
       this.data = []
-      let params = { ...this.query }
+      let params = { ...this.query, pageSize: this.$store.state.pageSize }
       params.startTime = params.startTime ? this.$lib.myMoment(params.startTime).formate('YYYY-MM-DD') + ' 00:00:00' : ''
       params.endTime = params.endTime ? this.$lib.myMoment(params.endTime).formate('YYYY-MM-DD') + ' 23:59:59' : ''
       this.$http.request({

@@ -192,14 +192,14 @@ export default {
           align: 'center',
           tooltip: true
         },
-        {
-          title: '创建时间',
-          key: 'createTime',
-          align: 'center',
-          render: (h, params) => {
-            return h('p', this.$lib.myMoment(new Date(params.row.createTime)).formate())
-          }
-        },
+        // {
+        //   title: '创建时间',
+        //   key: 'createTime',
+        //   align: 'center',
+        //   render: (h, params) => {
+        //     return h('p', this.$lib.myMoment(new Date(params.row.createTime)).formate())
+        //   }
+        // },
         {
           title: '操作',
           key: 'action',

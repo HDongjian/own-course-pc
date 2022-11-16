@@ -2,7 +2,7 @@
  * @Author: HaoDongjian
  * @Date: 2022-10-19 11:49:21
  * @LastEditors: HaoDongjian
- * @LastEditTime: 2022-11-07 15:10:18
+ * @LastEditTime: 2022-11-16 14:32:33
  * @Description:
 -->
 <template>
@@ -106,7 +106,7 @@ export default {
     },
     load () {
       this.loading = true
-      let params = { ...this.query }
+      let params = { ...this.query, pageSize: this.$store.state.pageSize }
       params.startTime = params.startTime ? this.SD(params.startTime) + ' 00:00:00' : ''
       params.endTime = params.endTime ? this.SD(params.endTime) + ' 23:59:59' : ''
       this.initTableByDate()
@@ -310,6 +310,10 @@ export default {
             align-items: center;
             display: flex;
             justify-content: center;
+            font-size: 17px;
+            &+span{
+              margin-left: 10px;
+            }
           }
           .w-1{
             flex: 2;

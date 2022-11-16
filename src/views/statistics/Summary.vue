@@ -167,7 +167,7 @@ export default {
       this.query.endTime = this.$lib.getDateMonthLast()
     },
     load () {
-      let params = { ...this.query }
+      let params = { ...this.query, pageSize: this.$store.state.pageSize }
       params.startTime = params.startTime ? this.$lib.myMoment(params.startTime).formate('YYYY-MM-DD') + ' 00:00:00' : ''
       params.endTime = params.endTime ? this.$lib.myMoment(params.endTime).formate('YYYY-MM-DD') + ' 23:59:59' : ''
       this.$http.request({

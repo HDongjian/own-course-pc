@@ -44,16 +44,16 @@
             </Select>
           </FormItem>
           <FormItem label="课时数" prop="classCount">
-            <Input :maxlength="10" v-model="form.classCount"></Input>
+            <Input :maxlength="10" v-model="form.classCount" placeholder="课时数"></Input>
           </FormItem>
           <FormItem label="每节课分钟数" prop="classMinute">
-            <Input :maxlength="10" v-model="form.classMinute"><span slot="append">分钟</span></Input>
+            <Input :maxlength="10" v-model="form.classMinute" placeholder="每节课分钟数"><span slot="append">分钟</span></Input>
           </FormItem>
           <FormItem label="订单金额" prop="orderAmount">
-            <Input :maxlength="10" v-model="form.orderAmount"><span slot="append">元</span></Input>
+            <Input :maxlength="10" v-model="form.orderAmount" placeholder="订单金额"><span slot="append">元</span></Input>
           </FormItem>
           <FormItem label="单价">
-            <Input readonly :maxlength="10" v-model="orderUnit"><span slot="append">元</span></Input>
+            <Input readonly :maxlength="10" v-model="orderUnit" placeholder="单价"><span slot="append">元</span></Input>
           </FormItem>
           <FormItem label="订单日期" prop="orderDate">
             <DatePicker clearable v-model="form.orderDate" type="date" placeholder="订单日期" style="width: 100%"></DatePicker>
@@ -190,18 +190,20 @@ export default {
           align: 'center',
           tooltip: true
         },
-        {
-          title: '创建时间',
-          key: 'createTime',
-          align: 'center',
-          render: (h, params) => {
-            return h('p', this.$lib.myMoment(new Date(params.row.updateTime)).formate())
-          }
-        },
+        // {
+        //   title: '创建时间',
+        //   key: 'createTime',
+        //   align: 'center',
+        //   width: '200',
+        //   render: (h, params) => {
+        //     return h('p', this.$lib.myMoment(new Date(params.row.updateTime)).formate())
+        //   }
+        // },
         {
           title: '操作',
           key: 'action',
           align: 'center',
+          width: '190',
           render: (h, params) => {
             return h('div', [
               h('a', {
@@ -241,7 +243,7 @@ export default {
       ],
       data: [],
       modal: false,
-      modalTitle: '添加学生',
+      modalTitle: '添加订单',
       modifyId: '',
       form: {
         studentId: '',
@@ -305,7 +307,7 @@ export default {
     },
     load (page) {
       this.query.pageNum = page
-      let params = { ...this.query }
+      let params = { ...this.query, pageSize: this.$store.state.pageSize }
       params.orderStartDate = params.orderStartDate ? this.$lib.myMoment(params.orderStartDate).formate('YYYY-MM-DD') + ' 00:00:00' : ''
       params.orderEndDate = params.orderEndDate ? this.$lib.myMoment(params.orderEndDate).formate('YYYY-MM-DD') + ' 23:59:59' : ''
       this.$http.request({
@@ -351,7 +353,8 @@ export default {
     add () {
       this.modal = true
       this.modifyId = ''
-      this.modalTitle = '添加学生'
+      this.modalTitle = '添加订单'
+      this.form.classMinute = '60'
     },
     edit (row) {
       this.modal = true
@@ -387,7 +390,6 @@ export default {
       })
     },
     modalOk () {
-      console.log(this.form)
       this.$refs.form.validate((valid) => {
         if (valid) {
           let data = { ...this.form }

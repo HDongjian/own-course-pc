@@ -172,7 +172,7 @@ export default {
     },
     load (page) {
       this.query.pageNum = page || 1
-      let params = { ...this.query }
+      let params = { ...this.query, pageSize: this.$store.state.pageSize }
       params.startTime = params.startTime ? this.$lib.myMoment(params.startTime).formate() : ''
       params.endTime = params.endTime ? this.$lib.myMoment(params.endTime).formate('YYYY-MM-DD') + ' 23:59:59' : ''
       this.$http.request({
@@ -190,7 +190,7 @@ export default {
       this.$refs.query.resetFields()
     },
     downLoad () {
-      let params = { ...this.query }
+      let params = { ...this.query, pageSize: this.$store.state.pageSize }
       if (params.startTime) {
         params.startTime = this.$lib.myMoment(params.startTime).formate()
       }

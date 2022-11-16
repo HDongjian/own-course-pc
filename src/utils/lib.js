@@ -326,6 +326,17 @@ let lib = {
       Sheets
     }
     XLSX.writeFile(workBook, fileName)
+  },
+  getKeysCount (arr) {
+    const obj = {}
+    arr.forEach(item => {
+      if (obj[item]) {
+        obj[item]++
+      } else {
+        obj[item] = 1
+      }
+    })
+    return obj
   }
 }
 

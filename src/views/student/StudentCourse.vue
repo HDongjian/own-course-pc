@@ -74,7 +74,7 @@ export default {
       this.load()
     },
     load () {
-      let params = { ...this.query }
+      let params = { ...this.query, pageSize: this.$store.state.pageSize }
       this.initTableByDate()
       params.startTime = params.startTime ? this.SD(params.startTime) + ' 00:00:00' : ''
       params.endTime = params.endTime ? this.SD(params.endTime) + ' 23:59:59' : ''

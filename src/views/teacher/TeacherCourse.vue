@@ -60,7 +60,7 @@
               <div class="content">
                 <div :style="`height:${100/(d.classes.length||1)}%;`" :row='JSON.stringify(c)' class="item" id="course" v-for="c in d.classes||[]" :key="c.id">
                   <div v-if="c.studentId" class="item_date_data">
-                    {{getSETime(c)}} - {{studentType[c.studentId]}} - {{subjectType[c.subjectId]}}
+                    {{getSETime(c)}} &nbsp; {{studentType[c.studentId]}} &nbsp; {{subjectType[c.subjectId]}}
                     <!-- <span class="w-1">{{getSETime(c)}} - 的各个过过</span> -->
                     <!-- <span class="w-2">{{studentType[c.studentId]}}</span> -->
                     <!-- <span class="w-3">{{subjectType[c.subjectId]}}</span> -->
@@ -71,10 +71,10 @@
               </div>
             </div>
             <div :style="`height:${lineCount}`" :class="['class',{'weekend':i===6-suppleCount.end}]" v-for="i in 6-suppleCount.end" :key="i+'end'"></div>
-            <div v-if="printTime" class="time-watermark">
+            <div class="time-watermark">
               <p>{{printTime}}</p>
-              <p>￥{{printShow.money}}</p>
-              <p>小时数:{{printShow.count}}</p>
+              <p v-if="showWatermark">￥{{printShow.money}}</p>
+              <p v-if="showWatermark">小时数:{{printShow.count}}</p>
             </div>
           </div>
         </div>
@@ -82,7 +82,7 @@
       <Spin size="large" fix v-if="loading"></Spin>
     </div>
 
-    <add-course :modalData="modal" :editData="editData" @close="addClose"></add-course>
+    <add-course :modalData="modal" :editData="editData" :title="modalTitle" @close="addClose"></add-course>
     <div class="right-menu" @contextmenu.prevent='rightMenuContext' :style="rightMenuStyle">
       <div v-if="rowData.courseId">
         <div @click="edit(rowData)" class="items">编辑</div>
@@ -105,7 +105,6 @@
 <script>
 import { validateWage, validateTime } from '../../utils/validate'
 import * as domtoimage from 'dom-to-image'
-console.log(domtoimage)
 export default {
 
   data () {
@@ -144,6 +143,7 @@ export default {
         y: 0
       },
       rowData: {},
+      showWatermark: false,
       printTime: '',
       dayTimeLimit: {
         startTime: '00:00',
@@ -169,7 +169,8 @@ export default {
         ]
       },
       idleData: [],
-      dealClasses: []
+      dealClasses: [],
+      modalTitle: ''
     }
   },
   computed: {
@@ -290,7 +291,7 @@ export default {
       this.query.endTime = this.$lib.getDateMonthLast(date)
     },
     load () {
-      let params = { ...this.query }
+      let params = { ...this.query, pageSize: this.$store.state.pageSize }
       this.initTableByDate()
       params.startTime = params.startTime ? this.SD(params.startTime) + ' 00:00:00' : ''
       params.endTime = params.endTime ? this.SD(params.endTime) + ' 23:59:59' : ''
@@ -462,13 +463,16 @@ export default {
       startTime = this.SD(startTime)
       endTime = this.SD(endTime)
       let time = this.$lib.myMoment().formate('YYYY年MM月DD日 HH:mm')
-      if (watermark) {
-        this.printTime = time
+      this.printTime = time
+      this.loading = true
+      let node = this.$refs.calendar
+      let options = {
+        height: node.clientHeight, width: node.clientWidth, cacheBust: true
       }
+      console.log(options)
       setTimeout(() => {
-        let node = this.$refs.calendar
-        domtoimage.toPng(node, {}).then((blob) => {
-          console.log(blob)
+        domtoimage.toPng(node, options).then((blob) => {
+          this.loading = false
           // this.$lib.downBlobFile(`${startTime}-${endTime}课表统计-${time}.png`, blob)
           this.$lib.downloadFile(`${startTime}-${endTime}课表统计-${time}.png`, blob)
           this.printTime = ''

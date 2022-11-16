@@ -58,11 +58,11 @@ export default {
           }
         },
         {
-          title: '单价(元/小时)',
+          title: '单价',
           key: 'perHourPay',
           align: 'center',
           render: (h, params) => {
-            return h('p', `${parseInt(params.row.orderAmount / params.row.classCount)}`)
+            return h('p', `${parseInt(params.row.orderAmount / params.row.classCount)}元/小时`)
           }
         },
         {
@@ -90,15 +90,15 @@ export default {
           key: 'description',
           align: 'center',
           tooltip: true
-        },
-        {
-          title: '创建时间',
-          key: 'createTime',
-          align: 'center',
-          render: (h, params) => {
-            return h('p', this.$lib.myMoment(new Date(params.row.updateTime)).formate())
-          }
         }
+        // {
+        //   title: '创建时间',
+        //   key: 'createTime',
+        //   align: 'center',
+        //   render: (h, params) => {
+        //     return h('p', this.$lib.myMoment(new Date(params.row.updateTime)).formate())
+        //   }
+        // }
       ]
     }
   },

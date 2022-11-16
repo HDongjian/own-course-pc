@@ -9,7 +9,7 @@
         </FormItem>
         <FormItem label="订单" prop="orderId" v-if="surplusList&&surplusList.length">
           <Select clearable style="width: 250px" v-model="form.orderId" @on-change='orderChange'  placeholder="订单">
-            <Option :disabled="item.disabled" v-for="(item,value) in surplusList" :key="value" :value="String(item.orderId)">{{orderType[item.orderType]}}-共{{item.classCount}}({{item.classMinute}}分/节)—余{{item.surplusCount}}</Option>
+            <Option :disabled="item.disabled" v-for="(item,value) in dealSurplusList" :key="value" :value="String(item.orderId)">{{orderType[item.orderType]}}-共{{item.classCount}}({{item.classMinute}}分/节)—余{{item.surplusCount}}</Option>
           </Select>
         </FormItem>
         <FormItem label="剩余课时" v-if="surplusCount&&!editId">
@@ -191,14 +191,20 @@ export default {
   },
   props: {
     modalData: { type: Boolean, default: false },
+    title: { type: String },
     editData: { type: Object }
   },
   watch: {
+    title () {
+      this.modalTitle = this.title
+      console.log(this.modalTitle)
+    },
     modalData () {
       this.modal = this.modalData
       this.addTableData = []
     },
     editData () {
+      if (JSON.stringify(this.editData) === '{}') return
       this.myEditData = { ...this.editData }
       this.modalTitle = '编辑课程'
       this.editId = this.myEditData.courseId || ''
@@ -212,6 +218,22 @@ export default {
         return Math.round(price / 60 * duration)
       }
       return ''
+    },
+    dealSurplusList () {
+      let orderIds = this.addTableData.map(item => item.orderId)
+      let orderKeys = this.$lib.getKeysCount(orderIds)
+      return this.surplusList.map(item => {
+        let surplusCount = orderKeys[item.orderId] ? item.surplusCount - orderKeys[item.orderId] : item.surplusCount
+        if (String(this.form.orderId) === String(item.orderId) && surplusCount <= 0) {
+          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+          this.form.orderId = ''
+        }
+        return {
+          ...item,
+          surplusCount,
+          disabled: surplusCount <= 0
+        }
+      })
     }
   },
   created () {
@@ -278,7 +300,6 @@ export default {
       }
     },
     addTable () {
-      console.log(this.form)
       this.$refs.form.validate((valid) => {
         if (!valid) return
         let { studentId, subjectId, duration, isAudition, orderId } = this.form
@@ -420,7 +441,6 @@ export default {
       this.form.date = this.$lib.myMoment(startTime).formate('YYYY-MM-DD')
       this.form.time = this.$lib.myMoment(startTime).formate('HH:mm')
       this.form.duration = (new Date(endTime).getTime() - new Date(startTime).getTime()) / 60000
-      console.log(this.form)
     }
   }
 }
