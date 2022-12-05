@@ -70,7 +70,7 @@
                 </div>
               </div>
             </div>
-            <div :style="`height:${lineCount}`" :class="['class',{'weekend':i===6-suppleCount.end}]" v-for="i in 6-suppleCount.end" :key="i+'end'"></div>
+            <div :style="`height:${lineCount}`" :class="['class',{'weekend':i===suppleCount.end}]" v-for="i in suppleCount.end" :key="i+'end'"></div>
             <div class="time-watermark">
               <p>{{printTime}}</p>
               <p v-if="showWatermark">￥{{printShow.money}}</p>
@@ -178,7 +178,7 @@ export default {
       let { start, end } = this.suppleCount
       let total = (this.dealClasses.length + Number(start || 0) + Number(end || 0)) / 7
       total = Math.ceil(total)
-      return `calc(${100 / total}%)`
+      return `${100 / total}%`
     },
     printShow () {
       let printShow = {
@@ -438,7 +438,8 @@ export default {
       let dates = this.$lib.getAllDates(startTime, endTime)
       if (dates.length === 0) return
       this.suppleCount.start = new Date(dates[0]).getDay()
-      this.suppleCount.end = new Date(dates[dates.length - 1]).getDay()
+      this.suppleCount.end = 6 - (new Date(endTime).getDay())
+
       this.classes = dates.map(item => {
         item = { date: item }
         return item
