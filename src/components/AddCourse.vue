@@ -220,8 +220,13 @@ export default {
       return ''
     },
     dealSurplusList () {
-      let orderIds = this.addTableData.map(item => item.orderId)
-      let orderKeys = this.$lib.getKeysCount(orderIds)
+      let orderKeys = {}
+      for (const item of this.addTableData) {
+        if (!Object.hasOwnProperty.call(orderKeys, item.orderId)) {
+          orderKeys[item.orderId] = 0
+        }
+        orderKeys[item.orderId] += Number(item.duration / 60)
+      }
       return this.surplusList.map(item => {
         let surplusCount = orderKeys[item.orderId] ? item.surplusCount - orderKeys[item.orderId] : item.surplusCount
         if (String(this.form.orderId) === String(item.orderId) && surplusCount <= 0) {

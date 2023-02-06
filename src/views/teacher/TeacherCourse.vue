@@ -239,12 +239,20 @@ export default {
     },
     classContextMenu (e) {
       e.stopPropagation()
-      this.rowData = {}
-      for (const el of e.path) {
-        if (el.id === 'course') {
-          this.rowData = JSON.parse(el.getAttribute('row'))
+      console.log(e)
+      console.log(e.path)
+      if (e.path) {
+        this.rowData = {}
+        for (const el of e.path) {
+          if (el.id === 'course') {
+            this.rowData = JSON.parse(el.getAttribute('row'))
+          }
         }
+      } else {
+        this.rowData = JSON.parse(e.target.getAttribute('row'))
       }
+      if (!this.rowData) return
+
       this.rightMenu.x = e.clientX
       this.rightMenu.y = e.clientY
     },
